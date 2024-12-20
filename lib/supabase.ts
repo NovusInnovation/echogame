@@ -15,13 +15,13 @@ class LargeSecureStore {
 
     const cipher = new aesjs.ModeOfOperation.ctr(
       encryptionKey,
-      new aesjs.Counter(1),
+      new aesjs.Counter(1)
     );
     const encryptedBytes = cipher.encrypt(aesjs.utils.utf8.toBytes(value));
 
     await SecureStore.setItemAsync(
       key,
-      aesjs.utils.hex.fromBytes(encryptionKey),
+      aesjs.utils.hex.fromBytes(encryptionKey)
     );
 
     return aesjs.utils.hex.fromBytes(encryptedBytes);
@@ -35,7 +35,7 @@ class LargeSecureStore {
 
     const cipher = new aesjs.ModeOfOperation.ctr(
       aesjs.utils.hex.toBytes(encryptionKeyHex),
-      new aesjs.Counter(1),
+      new aesjs.Counter(1)
     );
     const decryptedBytes = cipher.decrypt(aesjs.utils.hex.toBytes(value));
 

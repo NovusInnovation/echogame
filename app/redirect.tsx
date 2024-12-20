@@ -1,19 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
 export default function Redirect() {
   const router = useRouter();
-  const { access_token } = useLocalSearchParams(); // Get the 'code' query parameter
+  const { access_token } = useLocalSearchParams();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    // Set mounted state
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return; // Wait until mounted
+
     if (!access_token) {
-      // Redirect to home if no OAuth code is provided
+      // Redirect to home if no OAuth access_token is provided
       router.replace("/");
       return;
     }
 
-    const appScheme = `echogame://#?access_token=${access_token}`;
-    const fallbackUrl = `/#?code=${access_token}`; // Web login fallback
+    const appScheme = `echogame://login?access_token=${access_token}`;
+    const fallbackUrl = `/login?access_token=${access_token}`; // Web login fallback
 
     // Try opening the mobile app
     const timeout = setTimeout(() => {
@@ -26,7 +34,7 @@ export default function Redirect() {
 
     // Clear timeout if the app opens
     return () => clearTimeout(timeout);
-  }, [access_token, router]);
+  }, [isMounted, access_token, router]);
 
   return <p>Redirecting...</p>;
 }
