@@ -42,69 +42,63 @@ type Message = {
 	}
   }
 
-// Fetch previous scenarios from Supabase
-async function getPreviousScenarios(startId) {
-  try {
-    const { data, error } = await supabase
-      .from('cards')
-      .select('id, leading_choice, content')
-      .eq('parent', startId);
+async function getPreviousScenarios(startId: number) { // Line 46: Explicitly typed as 'number'
+  const { data, error } = await supabase
+    .from('cards')
+    .select('id, leading_choice, content')
+    .eq('parent', startId);
 
-    if (error) throw error;
+  if (error) throw error;
 
-    return data.map(d => ({
-      role: d.leading_choice ? 'user' : 'assistant',
-      content: d.content?.text || ''
-    }));
-  } catch (error) {
-    console.error("Error fetching previous scenarios:", error);
-    throw new Error('Error fetching previous scenarios');
-  }
+  return data.map(d => ({
+    role: d.leading_choice ? 'user' : 'assistant',
+    content: d.content?.text || ''
+  }));
 }
 
-// Function to handle the scenario expansion logic
-async function expandScenario(scenarioToExpand) {
-  try {
-    const previousScenarios = await getPreviousScenarios(scenarioToExpand);
-
-    const newScenarioMessages = [
-      ...previousScenarios,
-      { role: 'user', content: 'new choice' }, // Example leading choice
-    ];
-
-    const newScenario = await generateScenario(newScenarioMessages);
-
-    // Insert the new scenario into the database
-    const { data, error } = await supabase
-      .from('cards')
-      .insert([
-        {
-          parent: scenarioToExpand,
-          leading_choice: 'Option A',
-          content: { text: newScenario },
-        },
-      ]);
-
-    if (error) throw error;
-
-    return data;
-  } catch (error) {
-    console.error("Error expanding scenario:", error);
-    return null;
+async function expandScenario(scenarioToExpand: number) { // Line 60: Explicitly typed as 'number'
+	try {
+	  const previousScenarios = await getPreviousScenarios(scenarioToExpand);
+  
+	  const newScenarioMessages = [
+		...previousScenarios,
+		{ role: 'user', content: 'new choice' }, // Example leading choice
+	  ];
+  
+	  const newScenario = await generateScenario(newScenarioMessages);
+  
+	  // Insert the new scenario into the database
+	  const { data, error } = await supabase
+		.from('cards')
+		.insert([
+		  {
+			parent: scenarioToExpand,
+			leading_choice: 'Option A',
+			content: { text: newScenario },
+		  },
+		]);
+  
+	  if (error) throw error;
+  
+	  return data;
+	} catch (error) {
+	  console.error("Error expanding scenario", error);
+	}
   }
-}
+
+
+  
 
 export default function App() {
   // Explicitly typing the state
   const [scenario, setScenario] = React.useState<{ content: { text: string } }[] | null>(null);
-  const [loading, setLoading] = React.useState(false);
 
   const handleGenerateScenario = async () => {
-    setLoading(true);
-    const result = await expandScenario(123); // Pass the ID of the scenario you want to expand
-    setScenario(result);
-    setLoading(false);
+	const result = await expandScenario(123); // Pass the ID of the scenario you want to expand
+	setScenario(result ?? []);  // Ensure that 'result' is not undefined, use an empty array as fallback
   };
+  
+};
 /* 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -120,4 +114,4 @@ export default function App() {
     </View>
   );
   */
-}
+
