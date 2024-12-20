@@ -17,25 +17,30 @@ const SYSTEMPROMPT =
 const OPENAI_MODEL = "gpt-4o-2024-08-06";
 
 // Generate new scenario function
-async function generateScenario(messages) {
-  try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: OPENAI_MODEL,
-        messages: [
-          { role: 'system', content: SYSTEMPROMPT },
-          ...messages,
-        ],
-      },
-      { headers: { 'Authorization': `Bearer ${OPENAI_API_KEY}` } }
-    );
-    return response.data.choices[0].message.content; // Adjust according to OpenAI response format
-  } catch (error) {
-    console.error("Error generating scenario:", error);
-    throw new Error('Error generating scenario');
+type Message = {
+	role: string;
+	content: string;
+  };
+  
+  async function generateScenario(messages: Message[]): Promise<string> { // Line 20: Now messages has a defined type
+	try {
+	  const response = await axios.post(
+		'https://api.openai.com/v1/chat/completions',
+		{
+		  model: OPENAI_MODEL,
+		  messages: [
+			{ role: 'system', content: SYSTEMPROMPT },
+			...messages,
+		  ],
+		},
+		{ headers: { 'Authorization': `Bearer ${OPENAI_API_KEY}` } }
+	  );
+	  return response.data.choices[0].message.content;
+	} catch (error) {
+	  console.error("Error generating scenario", error);
+	  throw error;
+	}
   }
-}
 
 // Fetch previous scenarios from Supabase
 async function getPreviousScenarios(startId) {
