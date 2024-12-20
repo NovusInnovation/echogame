@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { createClient, SupabaseClient } from "jsr:@supabase/supabase-js@2";
 import { Database } from "../_shared/database.types.ts";
 import { CoreMessage, GenerateObjectResult } from "npm:ai";
@@ -6,11 +7,27 @@ import { generateObject } from "npm:ai";
 import { z } from "npm:zod";
 import { createOpenAI } from "npm:@ai-sdk/openai";
 import { corsHeaders } from "../_shared/cors.ts";
+=======
+import { createClient } from '@supabase/supabase-js';
+import axios from 'axios';
+import { z } from 'zod';
+import Config from 'react-native-config';
+
+// Set up Supabase Client
+const supabaseUrl = Config.SUPABASE_URL as string;
+const supabaseKey = Config.SUPABASE_KEY as string;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// OpenAI Model Setup
+const OPENAI_API_KEY = Config.OPENAI_API_KEY;
+const SYSTEMPROMPT = "Create a brief current event scenario (2-3 sentences) for a country leadership game..."; // Your SYSTEMPROMPT
+>>>>>>> c97b274a4e71dbc0c76b7d15c44438f039bf3d5b
 
 const SYSTEMPROMPT =
 	"Create a brief current event scenario (2-3 sentences) for a country leadership game. The user is the leader of a country, that is going downhill. Then provide exactly 2 response options, each between 1-4 words (these should be SUPER short). The response options should present different approaches to handling the situation. The below scenarios are the previous scenarios, Generate the NEXT scenario based on the previous scenario";
 const OPENAI_MODEL = "gpt-4o-2024-08-06";
 
+<<<<<<< HEAD
 const SUPABASE_URL = Deno.env.get("URL") ?? Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_ROLE_KEY =
 	Deno.env.get("SERVICE_ROLE_KEY") ??
@@ -204,3 +221,78 @@ async function getScenario(
 	}
 	return [clientScenario(genaration.situation, optionRows), previousScenarios];
 }
+=======
+type Message = {
+	role: string;
+	content: string;
+  };
+  
+  async function generateScenario(messages: Message[]) {
+	try {
+	  const response = await axios.post(
+		'https://api.openai.com/v1/chat/completions', 
+		{
+		  model: OPENAI_MODEL,
+		  messages: [
+			{ role: "system", content: SYSTEMPROMPT },
+			...messages,
+		  ]
+		}, 
+		{ headers: { 'Authorization': `Bearer ${OPENAI_API_KEY}` } }
+	  );
+	  return response.data.choices[0].message.content; // Adjust according to OpenAI response format
+	} catch (error) {
+	  console.error("Error generating scenario", error);
+	}
+  }
+// Define the type for the startId parameter
+async function getPreviousScenarios(startId: number) {
+	const { data, error } = await supabase
+	  .from('cards')
+	  .select('id, leading_choice, content')
+	  .eq('parent', startId);
+	
+	if (error) throw error;
+  
+	return data.map(d => ({
+	  role: d.leading_choice ? 'user' : 'assistant',
+	  content: d.content?.text || ''
+	}));
+  }
+  
+
+// Function to handle the scenario expansion logic
+// Define the type for scenarioToExpand as a number
+async function expandScenario(scenarioToExpand: number) {
+	try {
+	  const previousScenarios = await getPreviousScenarios(scenarioToExpand);
+  
+	  const newScenarioMessages = [
+		...previousScenarios,
+		{ role: 'user', content: 'new choice' }, // Example leading choice
+	  ];
+  
+	  const newScenario = await generateScenario(newScenarioMessages);
+  
+	  // Insert the new scenario into the database
+	  const { data, error } = await supabase
+		.from('cards')
+		.insert([
+		  {
+			parent: scenarioToExpand,
+			leading_choice: 'Option A',
+			content: { text: newScenario }
+		  }
+		]);
+  
+	  if (error) throw error;
+  
+	  return data;
+	} catch (error) {
+	  console.error("Error expanding scenario", error);
+	}
+  }
+  
+// Example usage: Call this to expand a scenario
+expandScenario(123); // Pass the ID of the scenario you want to expand
+>>>>>>> c97b274a4e71dbc0c76b7d15c44438f039bf3d5b
