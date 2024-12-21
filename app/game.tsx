@@ -3,66 +3,59 @@ import { View, useWindowDimensions } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { router } from 'expo-router';
-import { MotiView } from 'moti';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    interpolate,
-} from 'react-native-reanimated';
+import SwipeCard from './components/swipe-card';
+
+// Card data type
+type Card = {
+    id: number;
+    title: string;
+    description: string;
+};
 
 export default function GameScreen() {
-    const { width, height } = useWindowDimensions();
-    const translateX = useSharedValue(0);
-    const translateY = useSharedValue(0);
 
-    const gesture = Gesture.Pan()
-        .onUpdate((event) => {
-            translateX.value = event.translationX;
-            translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 100);
-        })
-        .onEnd(() => {
-            translateX.value = withSpring(0, { damping: 15 });
-            translateY.value = withSpring(0, { damping: 15 });
-        });
+    const [isAnimating, setIsAnimating] = React.useState(false);
+    // Add sample cards
+    const [cards, setCards] = React.useState<Card[]>([
+        { id: 1, title: "Card 1", description: "Swipe me left or right!" },
+        { id: 2, title: "Card 2", description: "I'm next in line!" },
+        { id: 3, title: "Card 3", description: "Wait for your turn!" },
+    ]);
 
-    const animatedStyle = useAnimatedStyle(() => {
-        // Calculate rotation based on position
+    // Memoize the card components
+    const cardComponents = React.useMemo(() => (
+        cards.map((card, index) => (
+            <SwipeCard
+                key={card.id}
+                card={card}
+                index={index}
+                totalCards={cards.length}
+                onDismiss={handleDismiss}
+                setIsAnimating={setIsAnimating}
+            />
+        ))
+    ), [cards]); // Only re-create when cards array changes
 
+    const handleDismiss = (direction: 'left' | 'right') => {
+        console.log(`Card swiped ${direction}`);
+        setIsAnimating(false);
 
-        return {
-            transform: [
-                { translateX: translateX.value },
-                { translateY: translateY.value },
-                { rotate: `${translateX.value / 10}deg` },
-            ],
-        };
-    });
+    };
 
     return (
         <View className="flex-1 justify-center items-center p-6 bg-secondary/30">
-            <GestureDetector gesture={gesture}>
-                <MotiView
-                    className="w-full max-w-sm bg-background rounded-lg shadow-lg p-6 mb-6"
-                    animate={{ scale: 1 }}
-                    from={{ scale: 0.9 }}
-                    style={animatedStyle}
-                >
-                    <Text className="text-2xl font-bold mb-4">Game Screen</Text>
-                    <Text className="text-foreground/70 mb-4">
-                        Drag this card and watch it tilt and spring back!
-                    </Text>
-                </MotiView>
-            </GestureDetector>
+            <View className="w-full max-w-sm">
+                {cardComponents}
+            </View>
 
-            <Button
+            < Button
                 variant="outline"
-                className="shadow shadow-foreground/5"
+                className="shadow shadow-foreground/5 mt-40"
                 onPress={() => router.back()}
             >
                 <Text>Go Back</Text>
             </Button>
+            {/* <Text>Animating: {isAnimating ? 'Yes' : 'No'}</Text> */}
         </View>
     );
 } 
