@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
@@ -24,6 +25,8 @@ export default function App() {
       <Auth />
       {session && session.user && <Text>{session.user.id}</Text>}
 =======
+=======
+>>>>>>> Stashed changes
 import * as React from 'react';
 import { View } from 'react-native';
 import Animated, { FadeInUp, FadeOutDown, LayoutAnimationConfig } from 'react-native-reanimated';
@@ -116,6 +119,9 @@ export default function Screen() {
           </Button>
         </CardFooter>
       </Card>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     </View>
   );
