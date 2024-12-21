@@ -15,6 +15,7 @@ import {
 import { Progress } from '~/components/ui/progress';
 import { Text } from '~/components/ui/text';
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip';
+import { router } from 'expo-router';
 
 const GITHUB_AVATAR_URI =
   'https://i.pinimg.com/originals/ef/a2/8d/efa28d18a04e7fa40ed49eeb0ab660db.jpg';
@@ -24,6 +25,9 @@ export default function Screen() {
 
   function updateProgressValue() {
     setProgress(Math.floor(Math.random() * 100));
+  }
+  function startGame() {
+    router.push('/game');
   }
   return (
     <View className='flex-1 justify-center items-center gap-5 p-6 bg-secondary/30'>
@@ -90,6 +94,9 @@ export default function Screen() {
           </Button>
         </CardFooter>
       </Card>
+      <Button variant='outline' className='shadow shadow-foreground/5' onPress={startGame}>
+        <Text>Start game</Text>
+      </Button>
     </View>
   );
 }
