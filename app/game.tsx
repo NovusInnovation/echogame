@@ -16,15 +16,11 @@ export default function GameScreen() {
     const { width, height } = useWindowDimensions();
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
-    const context = useSharedValue({ x: 0, y: 0 });
 
     const gesture = Gesture.Pan()
-        .onStart(() => {
-            context.value = { x: translateX.value, y: translateY.value };
-        })
         .onUpdate((event) => {
-            translateX.value = event.translationX + context.value.x;
-            translateY.value = event.translationY + context.value.y;
+            translateX.value = event.translationX;
+            translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 100);
         })
         .onEnd(() => {
             translateX.value = withSpring(0, { damping: 15 });
