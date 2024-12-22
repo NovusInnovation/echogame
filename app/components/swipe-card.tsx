@@ -62,8 +62,10 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
                     velocity: event.velocityX,
                     damping: 15
                 }, () => {
-                    runOnJS(onDismiss)(direction);
                 });
+                runOnJS(() => setTimeout(() => {
+                    onDismiss(direction);
+                }, 200))();
                 translateY.value = withSpring(-100, { damping: 250 });
             } else {
                 console.log('reset');
