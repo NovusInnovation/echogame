@@ -25,6 +25,7 @@ export default function GameScreen() {
     const handleDismiss = (direction: 'left' | 'right') => {
         console.log(`Card swiped ${direction}`);
         setIsAnimating(false);
+        setCards((prevCards) => prevCards.slice(1));
     };
     const cardComponents = React.useMemo(() => {
         // Memoize the card components
@@ -34,7 +35,7 @@ export default function GameScreen() {
             <SwipeCard
                 key={card.id}
                 card={card}
-                index={index}
+                index={index - (isAnimating ? 1 : 0)}
                 totalCards={cards.length}
                 onDismiss={handleDismiss}
                 setIsAnimating={setIsAnimating}

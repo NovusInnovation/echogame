@@ -31,7 +31,8 @@ export default memo(SwipeCard);
 function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: SwipeCardProps) {
     const { width } = useWindowDimensions();
     const translateX = useSharedValue(0);
-    const translateY = useSharedValue(0);
+    const translateY = useSharedValue(index * 8);
+    const isPressed = useSharedValue(false);
 
     translateX.addListener(1, (value) => {
         console.log(value);
@@ -40,14 +41,12 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
     let testingNum = useRef(0);
 
     useEffect(() => {
-        console.log("mounted");
-        return () => {
-            console.log("unmounted");
-        };
-    }, []);
+        translateY.value = withSpring(index * 8, { damping: 15 });
+    }, [index]);
 
     const gesture = Gesture.Pan()
-        .onStart(() => { console.log('start') })
+        .onBegin(() => { isPressed.value = true; })
+
         .onUpdate((event) => {
             translateX.value = event.translationX;
             translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 100);
@@ -58,12 +57,10 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
                 console.log(testingNum);
                 const direction = translateX.value > 0 ? 'right' : 'left';
                 runOnJS(setIsAnimating)(true);
-                translateX.value = withSpring(direction === 'right' ? width / 100 : -width, {
-
+                translateX.value = withSpring(direction === 'right' ? width : -width, {
                     stiffness: 10,
                     velocity: event.velocityX,
-                    damping: 15,
-
+                    damping: 15
                 }, () => {
                     runOnJS(onDismiss)(direction);
                 });
@@ -73,16 +70,18 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
                 translateX.value = withSpring(0, { damping: 15, velocity: event.velocityX });
                 translateY.value = withSpring(0, { damping: 15, velocity: event.velocityY });
             }
-        });
+        })
+        .onFinalize(() => { isPressed.value = false; });
+
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
             { translateX: translateX.value },
-            { translateY: translateY.value + index * 8 },
+            { translateY: translateY.value },
             { rotate: `${translateX.value / 10}deg` },
             {
                 scale: withTiming(
-                    1 - (index * 0.05)
+                    1 - (index * 0.05) + (isPressed.value ? 0.1 : 0),
                 ),
             },
 
