@@ -4,12 +4,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import * as aesjs from "aes-js";
 import "react-native-get-random-values";
-import { AppState } from "react-native";
+import { AppState, Platform } from "react-native";
 
-// As Expo's SecureStore does not support values larger than 2048
-// bytes, an AES-256 key is generated and stored in SecureStore, while
-// it is used to encrypt/decrypt values stored in AsyncStorage.
-class LargeSecureStore {
+// Cross-platform secure storage
+class CrossPlatformSecureStore {
   private async _encrypt(key: string, value: string) {
     const encryptionKey = crypto.getRandomValues(new Uint8Array(256 / 8));
 
@@ -19,18 +17,29 @@ class LargeSecureStore {
     );
     const encryptedBytes = cipher.encrypt(aesjs.utils.utf8.toBytes(value));
 
-    await SecureStore.setItemAsync(
-      key,
-      aesjs.utils.hex.fromBytes(encryptionKey)
-    );
+    if (Platform.OS === "web") {
+      localStorage.setItem(
+        key + "_key",
+        aesjs.utils.hex.fromBytes(encryptionKey)
+      );
+    } else {
+      await SecureStore.setItemAsync(
+        key + "_key",
+        aesjs.utils.hex.fromBytes(encryptionKey)
+      );
+    }
 
     return aesjs.utils.hex.fromBytes(encryptedBytes);
   }
 
   private async _decrypt(key: string, value: string) {
-    const encryptionKeyHex = await SecureStore.getItemAsync(key);
+    const encryptionKeyHex =
+      Platform.OS === "web"
+        ? localStorage.getItem(key + "_key")
+        : await SecureStore.getItemAsync(key + "_key");
+
     if (!encryptionKeyHex) {
-      return encryptionKeyHex;
+      return null;
     }
 
     const cipher = new aesjs.ModeOfOperation.ctr(
@@ -43,47 +52,69 @@ class LargeSecureStore {
   }
 
   async getItem(key: string) {
-    const encrypted = await AsyncStorage.getItem(key);
+    const encrypted =
+      Platform.OS === "web"
+        ? localStorage.getItem(key)
+        : await AsyncStorage.getItem(key);
+
     if (!encrypted) {
-      return encrypted;
+      return null;
     }
 
     return await this._decrypt(key, encrypted);
   }
 
-  async removeItem(key: string) {
-    await AsyncStorage.removeItem(key);
-    await SecureStore.deleteItemAsync(key);
-  }
-
   async setItem(key: string, value: string) {
     const encrypted = await this._encrypt(key, value);
 
-    await AsyncStorage.setItem(key, encrypted);
+    if (Platform.OS === "web") {
+      localStorage.setItem(key, encrypted);
+    } else {
+      await AsyncStorage.setItem(key, encrypted);
+    }
+  }
+
+  async removeItem(key: string) {
+    if (Platform.OS === "web") {
+      localStorage.removeItem(key);
+      localStorage.removeItem(key + "_key");
+    } else {
+      await AsyncStorage.removeItem(key);
+      await SecureStore.deleteItemAsync(key + "_key");
+    }
   }
 }
 
+// Supabase client setup
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: new LargeSecureStore(),
+    storage: new CrossPlatformSecureStore(),
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: Platform.OS === "web", // Enable session detection for web
   },
 });
 
-// Tells Supabase Auth to continuously refresh the session automatically
-// if the app is in the foreground. When this is added, you will continue
-// to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
-// `SIGNED_OUT` event if the user's session is terminated. This should
-// only be registered once.
-AppState.addEventListener("change", (state) => {
-  if (state === "active") {
-    supabase.auth.startAutoRefresh();
-  } else {
-    supabase.auth.stopAutoRefresh();
-  }
-});
+// AppState handling for session refresh
+if (Platform.OS === "web") {
+  // For web, use visibilitychange
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      supabase.auth.startAutoRefresh();
+    } else {
+      supabase.auth.stopAutoRefresh();
+    }
+  });
+} else {
+  // For mobile, use AppState
+  AppState.addEventListener("change", (state) => {
+    if (state === "active") {
+      supabase.auth.startAutoRefresh();
+    } else {
+      supabase.auth.stopAutoRefresh();
+    }
+  });
+}

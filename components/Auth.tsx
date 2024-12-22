@@ -79,6 +79,13 @@ export default function Auth() {
           onPress={() => anonSignIn(setLoading)}
         />
       </View>
+      <View style={styles.verticallySpaced}>
+        <Button
+          title="Sign out"
+          disabled={loading}
+          onPress={() => supabase.auth.signOut()}
+        />
+      </View>
     </View>
   );
 }
