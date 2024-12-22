@@ -31,7 +31,9 @@ export default function GameScreen() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [currentScenario, setCurrentScenario] = useState<ClientScenario | null>(null);
-    const choiseScenarios = useRef<Record<string, any>>({});
+    const choiseScenarios = useRef({
+        optiosA: null, optionB: null
+    });
 
     useEffect(() => {
         const initializeScenario = async () => {
