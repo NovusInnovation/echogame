@@ -26,6 +26,13 @@ interface SwipeCardProps {
     setIsAnimating: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const SWIPE_SPRING_CONFIG =
+{
+    stiffness: 50,
+    damping: 40
+}
+
+
 export default memo(SwipeCard);
 
 function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: SwipeCardProps) {
@@ -52,8 +59,8 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
             translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 200);
         })
         .onEnd((event) => {
-            const predictedX = event.velocityX + event.translationX;
-            const predictedY = event.velocityY + event.translationY;
+            const predictedX = event.velocityX / 2 + event.translationX;
+            const predictedY = event.velocityY / 2 + event.translationY;
             console.log(event.velocityX, event.velocityY, predictedX, predictedY);
             if (Math.abs(event.velocityX) > VELOCITY_THRESHOLD && Math.abs(predictedX) > SWIPE_THRESHOLD) {
                 const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
@@ -61,15 +68,14 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
                 const direction = translateX.value > 0 ? 'right' : 'left';
                 runOnJS(setIsAnimating)(true);
 
+
                 translateX.value = withSpring(predictedX / dis, {
-                    stiffness: 50,
-                    velocity: event.velocityX,
-                    damping: 40
+                    ...SWIPE_SPRING_CONFIG,
+                    velocity: event.velocityX
                 });
                 translateY.value = withSpring(predictedY / dis, {
-                    stiffness: 50,
+                    ...SWIPE_SPRING_CONFIG,
                     velocity: event.velocityY,
-                    damping: 40
                 });
                 runOnJS(() => setTimeout(() => {
                     onDismiss(direction);
