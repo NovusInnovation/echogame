@@ -1,10 +1,11 @@
-import { Button, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
 import { supabase } from "../lib/supabase/client";
 import { SetStateAction, useState } from "react";
+import { Button } from "./ui/button";
 
 WebBrowser.maybeCompleteAuthSession(); // required for web only
 const redirectTo = makeRedirectUri();
@@ -73,24 +74,33 @@ export default function Auth() {
     <View style={styles.container}>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
-          title="Sign in with Google"
           disabled={loading}
+          variant="outline"
+          className="shadow shadow-foreground/5"
           onPress={() => performOAuth(setLoading)}
-        />
+        >
+          Sign in with Google
+        </Button>
       </View>
       <View style={styles.verticallySpaced}>
         <Button
-          title="Sign in anon"
           disabled={loading}
           onPress={() => anonSignIn(setLoading)}
-        />
+          variant="outline"
+          className="shadow shadow-foreground/5"
+        >
+          Sign in anonn
+        </Button>
       </View>
       <View style={styles.verticallySpaced}>
         <Button
-          title="Sign out"
           disabled={loading}
           onPress={() => supabase.auth.signOut()}
-        />
+          variant="outline"
+          className="shadow shadow-foreground/5"
+        >
+          Sign out
+        </Button>
       </View>
     </View>
   );
