@@ -10,7 +10,7 @@ import Animated, {
     runOnJS,
     interpolate,
 } from 'react-native-reanimated';
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 
 interface Card {
     title: string;
@@ -22,7 +22,7 @@ interface SwipeCardProps {
     index: number;
     totalCards: number;
     onDismiss: (direction: 'left' | 'right') => void;
-    isAnimating: boolean;
+    // isAnimating: boolean;
     setIsAnimating: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -32,7 +32,19 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
     const { width } = useWindowDimensions();
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
+
+    translateX.addListener(1, (value) => {
+        console.log(value);
+    });
     const SWIPE_THRESHOLD = width * 0.4;
+    let testingNum = useRef(0);
+
+    useEffect(() => {
+        console.log("mounted");
+        return () => {
+            console.log("unmounted");
+        };
+    }, []);
 
     const gesture = Gesture.Pan()
         .onStart(() => { console.log('start') })
@@ -42,11 +54,13 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
         })
         .onEnd((event) => {
             if (Math.abs(translateX.value) > SWIPE_THRESHOLD) {
+                testingNum.current++;
+                console.log(testingNum);
                 const direction = translateX.value > 0 ? 'right' : 'left';
                 runOnJS(setIsAnimating)(true);
-                translateX.value = withSpring(direction === 'right' ? width : -width, {
+                translateX.value = withSpring(direction === 'right' ? width / 100 : -width, {
 
-                    stiffness: 100,
+                    stiffness: 10,
                     velocity: event.velocityX,
                     damping: 15,
 
@@ -55,6 +69,7 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
                 });
                 translateY.value = withSpring(-100, { damping: 250 });
             } else {
+                console.log('reset');
                 translateX.value = withSpring(0, { damping: 15, velocity: event.velocityX });
                 translateY.value = withSpring(0, { damping: 15, velocity: event.velocityY });
             }
@@ -63,38 +78,26 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
             { translateX: translateX.value },
-            { translateY: translateY.value },
+            { translateY: translateY.value + index * 8 },
             { rotate: `${translateX.value / 10}deg` },
             {
-                scale: interpolate(
-                    Math.abs(translateX.value),
-                    [0, SWIPE_THRESHOLD],
-                    [1, 0.95],
-                    'clamp'
-                )
+                scale: withTiming(
+                    1 - (index * 0.05)
+                ),
             },
+
         ],
     }));
 
-    const predictedIndex = Math.max(index - (false ? 1 : 0), 0);
 
     return (
         <GestureDetector gesture={gesture}>
             <MotiView
                 className="absolute w-full bg-background rounded-lg shadow-lg p-6"
-                animate={{
-                    scale: 1 - (predictedIndex * 0.05),
-                    translateY: predictedIndex * 8
-                }}
-                transition={{
-                    type: 'timing',
-                    duration: 1000,
-                }}
-                from={{ scale: 0.2 }}
                 style={[
                     animatedStyle,
 
-                    { zIndex: totalCards - index, backgroundColor: predictedIndex === 0 ? 'red' : "white" }
+                    { zIndex: totalCards - index, backgroundColor: index === 0 ? 'red' : "white" }
                 ]}
             >
                 <Text className="text-2xl font-bold mb-4">{card.title}</Text>
