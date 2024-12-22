@@ -34,14 +34,14 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
     const translateY = useSharedValue(index * 8);
     const isPressed = useSharedValue(false);
 
-    translateX.addListener(1, (value) => {
-        console.log(value);
-    });
     const SWIPE_THRESHOLD = width * 0.4;
-    let testingNum = useRef(0);
+    const VELOCITY_THRESHOLD = 100;
+
 
     useEffect(() => {
-        translateY.value = withSpring(index * 8, { damping: 15 });
+        if (index >= 0) {
+            translateY.value = withSpring(index * 8, { damping: 15 });
+        }
     }, [index]);
 
     const gesture = Gesture.Pan()
@@ -49,24 +49,32 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
 
         .onUpdate((event) => {
             translateX.value = event.translationX;
-            translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 100);
+            translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 200);
         })
         .onEnd((event) => {
-            if (Math.abs(translateX.value) > SWIPE_THRESHOLD) {
-                testingNum.current++;
-                console.log(testingNum);
+            const predictedX = event.velocityX + event.translationX;
+            const predictedY = event.velocityY + event.translationY;
+            console.log(event.velocityX, event.velocityY, predictedX, predictedY);
+            if (Math.abs(event.velocityX) > VELOCITY_THRESHOLD && Math.abs(predictedX) > SWIPE_THRESHOLD) {
+                const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
+
                 const direction = translateX.value > 0 ? 'right' : 'left';
                 runOnJS(setIsAnimating)(true);
-                translateX.value = withSpring(direction === 'right' ? width : -width, {
-                    stiffness: 10,
+
+                translateX.value = withSpring(predictedX / dis, {
+                    stiffness: 50,
                     velocity: event.velocityX,
-                    damping: 15
-                }, () => {
+                    damping: 40
+                });
+                translateY.value = withSpring(predictedY / dis, {
+                    stiffness: 50,
+                    velocity: event.velocityY,
+                    damping: 40
                 });
                 runOnJS(() => setTimeout(() => {
                     onDismiss(direction);
-                }, 200))();
-                translateY.value = withSpring(-100, { damping: 250 });
+                }, 500))();
+
             } else {
                 console.log('reset');
                 translateX.value = withSpring(0, { damping: 15, velocity: event.velocityX });
