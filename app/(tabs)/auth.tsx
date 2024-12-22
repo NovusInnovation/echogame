@@ -1,11 +1,3 @@
-<<<<<<<< HEAD:app/(tabs)/auth.tsx
-import "react-native-url-polyfill/auto";
-import { useState, useEffect } from "react";
-import { supabase } from "../../lib/supabase";
-import Auth from "../../components/Auth";
-import { View, Text } from "react-native";
-import { Session } from "@supabase/supabase-js";
-========
 import * as React from 'react';
 import { View } from 'react-native';
 import Animated, { FadeInUp, FadeOutDown, LayoutAnimationConfig } from 'react-native-reanimated';
@@ -24,7 +16,6 @@ import { Progress } from '~/components/ui/progress';
 import { Text } from '~/components/ui/text';
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip';
 import { router } from 'expo-router';
->>>>>>>> 9b6d201532486eaff78476644828bf8a1e097d6a:app/index.tsx
 
 const GITHUB_AVATAR_URI =
   'https://i.pinimg.com/originals/ef/a2/8d/efa28d18a04e7fa40ed49eeb0ab660db.jpg';
