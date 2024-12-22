@@ -34,7 +34,6 @@ const performOAuth = async (setLoading: {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo,
       skipBrowserRedirect: true,
     },
   });

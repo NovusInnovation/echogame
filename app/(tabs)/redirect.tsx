@@ -21,7 +21,7 @@ export default function Redirect() {
     }
 
     const appScheme = `echogame://login?access_token=${access_token}`;
-    const fallbackUrl = `/login?access_token=${access_token}`; // Web login fallback
+    const fallbackUrl = `/auth?access_token=${access_token}`; // Web login fallback
 
     // Try opening the mobile app
     const timeout = setTimeout(() => {
