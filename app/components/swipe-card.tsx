@@ -35,6 +35,7 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
     const SWIPE_THRESHOLD = width * 0.4;
 
     const gesture = Gesture.Pan()
+        .onStart(() => { console.log('start') })
         .onUpdate((event) => {
             translateX.value = event.translationX;
             translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 100);

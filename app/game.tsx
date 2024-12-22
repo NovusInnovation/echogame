@@ -22,8 +22,13 @@ export default function GameScreen() {
         { id: 3, title: "Card 3", description: "Wait for your turn!" },
     ]);
 
+    const handleDismiss = (direction: 'left' | 'right') => {
+        console.log(`Card swiped ${direction}`);
+        setIsAnimating(false);
+
+    };
     // Memoize the card components
-    const cardComponents = React.useMemo(() => (
+    const cardComponents =
         cards.map((card, index) => (
             <SwipeCard
                 key={card.id}
@@ -34,20 +39,14 @@ export default function GameScreen() {
                 setIsAnimating={setIsAnimating}
             />
         ))
-    ), [cards]); // Only re-create when cards array changes
 
-    const handleDismiss = (direction: 'left' | 'right') => {
-        console.log(`Card swiped ${direction}`);
-        setIsAnimating(false);
 
-    };
 
     return (
         <View className="flex-1 justify-center items-center p-6 bg-secondary/30">
             <View className="w-full max-w-sm">
                 {cardComponents}
             </View>
-
             < Button
                 variant="outline"
                 className="shadow shadow-foreground/5 mt-40"
