@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "dk.novusgroup.echo",
+      "sha256_cert_fingerprints": [
+        "AB:6A:EF:DC:6E:9C:21:EA:3B:17:EA:32:9A:32:3D:49:49:14:D9:C9:84:C7:AE:19:63:A2:5D:61:5C:85:DB:F4"
+      ]
+    }
+  }
+]

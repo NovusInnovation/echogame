@@ -17,6 +17,21 @@
       "supportsTablet": true
     },
     "android": {
+      "intentFilters": [
+        {
+          "autoVerify": true,
+          "data": {
+            "scheme": "https",
+            "host": "new.echogame.xyz",
+            "pathPrefix": "/"
+          },
+          "action": "VIEW",
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
       "package": "dk.novusgroup.echo",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
