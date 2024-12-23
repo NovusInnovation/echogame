@@ -73,9 +73,14 @@ export default function GameScreen() {
   }, []); // Empty dependency array means this runs once on mount
 
   const handleDismiss = (direction: "left" | "right") => {
+    setIsAnimating(true);
     console.log(`Card swiped ${direction}`);
-    setIsAnimating(false);
-    setCards((prevCards) => prevCards.slice(1));
+    setTimeout(() => {
+      // The animation should be stopped after 400ms
+      setIsAnimating(false);
+      // Remove card which was swiped
+      setCards((prevCards) => prevCards.slice(1));
+    }, 400);
   };
   const cardComponents = useMemo(
     () => {

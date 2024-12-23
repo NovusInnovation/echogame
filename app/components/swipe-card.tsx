@@ -57,6 +57,8 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
         .onUpdate((event) => {
             translateX.value = event.translationX;
             translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 200);
+
+
         })
         .onEnd((event) => {
             const predictedX = event.velocityX / 2 + event.translationX;
@@ -66,8 +68,8 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
                 const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
 
                 const direction = translateX.value > 0 ? 'right' : 'left';
-                runOnJS(setIsAnimating)(true);
 
+                runOnJS(onDismiss)(direction);
 
                 translateX.value = withSpring(predictedX / dis, {
                     ...SWIPE_SPRING_CONFIG,
@@ -77,10 +79,10 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
                     ...SWIPE_SPRING_CONFIG,
                     velocity: event.velocityY,
                 });
-                runOnJS(() => setTimeout(() => {
-                    onDismiss(direction);
-                }, 500))();
 
+
+
+                // runOnJS(fun)();
             } else {
                 console.log('reset');
                 translateX.value = withSpring(0, { damping: 15, velocity: event.velocityX });
@@ -112,7 +114,7 @@ function SwipeCard({ card, index, totalCards, onDismiss, setIsAnimating }: Swipe
                 style={[
                     animatedStyle,
 
-                    { zIndex: totalCards - index, backgroundColor: index === 0 ? 'red' : "white" }
+                    { zIndex: totalCards - index }
                 ]}
             >
                 <Text className="text-2xl font-bold mb-4">{card.title}</Text>
