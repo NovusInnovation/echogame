@@ -6,6 +6,7 @@ import * as Linking from "expo-linking";
 import { supabase } from "../lib/supabase/client";
 import { SetStateAction, useState } from "react";
 import { Button } from "./ui/button";
+import { Text } from "./ui/text";
 
 WebBrowser.maybeCompleteAuthSession(); // required for web only
 const redirectTo = makeRedirectUri();
@@ -79,7 +80,7 @@ export default function Auth() {
           className="shadow shadow-foreground/5"
           onPress={() => performOAuth(setLoading)}
         >
-          Sign in with Google
+          <Text>Sign in with Google</Text>
         </Button>
       </View>
       <View style={styles.verticallySpaced}>
@@ -89,7 +90,7 @@ export default function Auth() {
           variant="outline"
           className="shadow shadow-foreground/5"
         >
-          Sign in anonn
+          <Text>Sign in anon</Text>
         </Button>
       </View>
       <View style={styles.verticallySpaced}>
@@ -99,7 +100,7 @@ export default function Auth() {
           variant="outline"
           className="shadow shadow-foreground/5"
         >
-          Sign out
+          <Text>Sign out</Text>
         </Button>
       </View>
     </View>

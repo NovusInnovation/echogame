@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { Text } from "~/components/ui/text";
 
 export default function Redirect() {
   const router = useRouter();
@@ -36,5 +37,5 @@ export default function Redirect() {
     return () => clearTimeout(timeout);
   }, [isMounted, access_token, router]);
 
-  return <p>Redirecting...</p>;
+  return <Text>Redirecting...</Text>;
 }
