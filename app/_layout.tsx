@@ -12,6 +12,7 @@ import { PortalHost } from '@rn-primitives/portal';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { supabase } from '~/lib/supabase/client';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -55,8 +56,17 @@ export default function RootLayout() {
       }
       setAndroidNavigationBar(colorTheme);
       setIsColorSchemeLoaded(true);
-    })().finally(() => {
+    })().finally(async () => {
+      if ((await supabase.auth.getUser()).data?.user?.id) {
+        SplashScreen.hideAsync();
+        return;
+      };
+      console.log('Signing in anonymously...');
+      const { error } = await supabase.auth.signInAnonymously();
       SplashScreen.hideAsync();
+      
+      if (error) throw error;
+      console.log('Signed in anonymously');
     });
   }, []);
 

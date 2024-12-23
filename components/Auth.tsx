@@ -32,14 +32,19 @@ const performOAuth = async (setLoading: {
   (arg0: boolean): void;
 }) => {
   setLoading(true);
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  console.log("performOAuth");
+  const { data, error } = await supabase.auth.linkIdentity({
     provider: "google",
     options: {
       redirectTo: "https://new.echogame.xyz/redirect",
       skipBrowserRedirect: true,
     },
   });
+  console.log("error");
+  console.log(error);
   if (error) throw error;
+  console.log("data");
+  console.log(data);
 
   const res = await WebBrowser.openAuthSessionAsync(
     data?.url ?? "",
@@ -54,16 +59,14 @@ const performOAuth = async (setLoading: {
   setLoading(false);
 };
 
-const anonSignIn = async (setLoading: {
+const logOut = async (setLoading: {
   (value: SetStateAction<boolean>): void;
   (arg0: boolean): void;
 }) => {
   setLoading(true);
-  const { error } = await supabase.auth.signInAnonymously();
-
-  if (error) throw error;
+  await supabase.auth.signOut();
   setLoading(false);
-};
+}
 
 export default function Auth() {
   // Handle linking into app from email app.
@@ -86,17 +89,7 @@ export default function Auth() {
       <View style={styles.verticallySpaced}>
         <Button
           disabled={loading}
-          onPress={() => anonSignIn(setLoading)}
-          variant="outline"
-          className="shadow shadow-foreground/5"
-        >
-          <Text>Sign in anon</Text>
-        </Button>
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Button
-          disabled={loading}
-          onPress={() => supabase.auth.signOut()}
+          onPress={() => logOut(setLoading)}
           variant="outline"
           className="shadow shadow-foreground/5"
         >
