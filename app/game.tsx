@@ -5,9 +5,10 @@ import { router } from "expo-router";
 import SwipeCard from "./components/swipe-card";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { supabase } from "~/lib/supabase/client";
+import { useSharedValue } from "react-native-reanimated";
 
 // Card data type
-type ClientScenario = {
+export type ClientScenario = {
   situation: string;
   optionA: { text: string; id: number };
   optionB: { text: string; id: number };
@@ -25,12 +26,15 @@ export default function GameScreen() {
   );
 
   const [isLoading, setIsLoading] = useState(false);
-  const [currentScenario, setCurrentScenario] = useState<ClientScenario | null>(
-    null
+  const [currentScenario, setCurrentScenario] = useState<ClientScenario | undefined>(
+    undefined
   );
-  const choiseScenarios = useRef({
-    optiosA: null,
-    optionB: null,
+  const choiseScenarios = useRef<{
+    optionA: ClientScenario | undefined;
+    optionB: ClientScenario | undefined;
+  }>({
+    optionA: undefined,
+    optionB: undefined,
   });
 
   useEffect(() => {
@@ -72,7 +76,7 @@ export default function GameScreen() {
     initializeScenario();
   }, []); // Empty dependency array means this runs once on mount
 
-  const handleDismiss = (direction: "left" | "right") => {
+  const handleDismiss = (direction: "optionA" | "optionB") => {
     setIsAnimating(true);
     console.log(`Card swiped ${direction}`);
     setTimeout(() => {
@@ -80,41 +84,39 @@ export default function GameScreen() {
       setIsAnimating(false);
       // Remove card which was swiped
       setCards((prevCards) => prevCards.slice(1));
+      setCurrentScenario(nextCard!);
     }, 400);
   };
-  const cardComponents = useMemo(
-    () => {
-      // Memoize the card components
+  const [nextCard, setNextCard] = useState<ClientScenario | undefined>({ situation: "This is the next card", optionA: { text: "Option A", id: 1 }, optionB: { text: "Option B", id: 2 } });
 
-      return cards.map((card, index) => (
-        <SwipeCard
-          key={card}
-          card={{
-            title: `Card ${card}`,
-            description:
-              index === 0 ? MainCardContent : `Description for card ${card}`,
-          }}
-          index={index - (isAnimating ? 1 : 0)}
-          totalCards={cards.length}
-          onDismiss={handleDismiss}
-          setIsAnimating={setIsAnimating}
-        />
-      ));
-    },
-    [cards, isAnimating] // Add dependencies array
-  );
+  useEffect(() => {
+    console.log(nextCard);
+  }, [nextCard]);
+  const cardComponents =
+
+    // Memoize the card components
+
+    cards.map((card, index) => (
+      <SwipeCard
+        key={card}
+        card={{
+          title: `Card ${card}`,
+          description:
+            index === 0 ? currentScenario?.situation ?? "." : nextCard?.situation ?? ".",
+        }}
+        index={index - (isAnimating ? 1 : 0)}
+        totalCards={cards.length}
+        onDismiss={handleDismiss}
+        choiseScenarios={choiseScenarios}
+        setNextCard={setNextCard}
+
+      />
+    ));
+
 
   return (
     <View className="flex-1 justify-center items-center p-6 bg-secondary/30">
-      <View className="w-full max-w-sm">{cardComponents}</View>
-      <Button
-        variant="outline"
-        className="shadow shadow-foreground/5 mt-40"
-        onPress={() => router.back()}
-      >
-        <Text>Go Back</Text>
-      </Button>
-      {/* <Text>Animating: {isAnimating ? 'Yes' : 'No'}</Text> */}
+      <View className="w-full max-w-sm h-[20rem]">{cardComponents}</View>
     </View>
   );
 }
