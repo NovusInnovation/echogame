@@ -1,16 +1,17 @@
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import SwipeCard from "./components/swipe-card";
 import { useState } from "react";
-import { useScenarioManager } from "~/hooks/useScenarioManager";
+import { useScenarioManager } from "~/lib/hooks/useScenarioManager";
 
 const STARTING_SCENARIO_ID = 5;
 
 export default function GameScreen() {
   const [isAnimating, setIsAnimating] = useState(false);
-  const [cards, setCards] = useState<number[]>([1, 2, 3]);
+  const [cards, setCards] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   const {
     currentScenario,
+    setCurrentScenario,
     isLoading,
     choiceScenarios,
     nextCard,
@@ -23,7 +24,7 @@ export default function GameScreen() {
 
     setTimeout(() => {
       setIsAnimating(false);
-      setCards((prevCards) => prevCards.slice(1));
+      setCards((prevCards) => [...prevCards.slice(1), prevCards.length + prevCards[0] + 1]);
       setCurrentScenario(nextCard!);
     }, 400);
   };
@@ -43,14 +44,6 @@ export default function GameScreen() {
       setNextCard={setNextCard}
     />
   ));
-
-  if (isLoading) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
 
   return (
     <View className="flex-1 justify-center items-center p-6 bg-secondary/30">

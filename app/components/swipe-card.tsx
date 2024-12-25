@@ -13,7 +13,7 @@ import Animated, {
 import { memo, SetStateAction, useEffect, useMemo, useRef } from 'react';
 import { MutableRefObject } from 'react';
 import { SharedValue } from 'react-native-reanimated';
-import { ClientScenario } from '../game';
+import { ClientScenario } from '~/lib/types/game';
 import { ChoiceOptions } from '~/src-old/app/game/components/ChoiceOptions';
 
 interface Card {
@@ -26,10 +26,10 @@ type SwipeCardProps = {
     index: number;
     totalCards: number;
     onDismiss: (direction: "optionA" | "optionB") => void;
-    choiseScenarios: MutableRefObject<{
+    choiseScenarios: {
         optionA: ClientScenario | undefined;
         optionB: ClientScenario | undefined;
-    }>;
+    };
     setNextCard: (scenario: ClientScenario | undefined) => void;
 };
 
@@ -47,20 +47,7 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
 
     const translateX = useSharedValue(0);
 
-    useEffect(() => {
-        if (index >= 0) {
-            translateX.addListener(1, (value) => {
-                if (!(choiseScenarios.current.optionA && choiseScenarios.current.optionB)) {
-                    console.log("whwhwh")
-                }                // console.log(nextScenario);
-
-            });
-        }
-        else {
-            translateX.removeListener(1);
-        }
-    }, [index]);
-    const translateY = useSharedValue(index * 8);
+    const translateY = useSharedValue(index * 18);
     const isPressed = useSharedValue(false);
 
     const SWIPE_THRESHOLD = width * 0.4;
@@ -69,7 +56,7 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
 
     useEffect(() => {
         if (index >= 0) {
-            translateY.value = withSpring(index * 8, { damping: 15 });
+            translateY.value = withSpring(index * 18, { damping: 15 });
         }
     }, [index]);
 
@@ -80,16 +67,18 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
             translateX.value = event.translationX;
             translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 200);
 
-            const nextScenario = event.translationX < 0 ? choiseScenarios.current.optionA : choiseScenarios.current.optionB;
+            const nextScenario = event.translationX < 0 ? choiseScenarios.optionA : choiseScenarios.optionB;
 
-            setNextCard(nextScenario);
+            console.log(nextScenario)
+
+            runOnJS(setNextCard)(nextScenario);
         })
         .onEnd((event) => {
             const predictedX = event.velocityX / 2 + event.translationX;
             const predictedY = event.velocityY / 2 + event.translationY;
             const direction = predictedX > 0 ? 'optionA' : 'optionB';
             console.log(event.velocityX, event.velocityY, predictedX, predictedY);
-            if (Math.abs(event.velocityX) > VELOCITY_THRESHOLD && Math.abs(predictedX) > SWIPE_THRESHOLD && choiseScenarios.current[direction]) {
+            if (Math.abs(event.velocityX) > VELOCITY_THRESHOLD && Math.abs(predictedX) > SWIPE_THRESHOLD && choiseScenarios[direction]) {
                 const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
 
 
@@ -123,7 +112,7 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
             { rotate: `${translateX.value / 10}deg` },
             {
                 scale: withTiming(
-                    1 - (index * 0.05) + (isPressed.value ? 0.05 : 0),
+                    0.95 ** index + (isPressed.value ? 0.05 : 0),
                 ),
             },
 
@@ -137,7 +126,6 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
                 className="absolute h-full w-full bg-background rounded-lg shadow-lg p-6"
                 style={[
                     animatedStyle,
-
                     { zIndex: totalCards - index }
                 ]}
             >
