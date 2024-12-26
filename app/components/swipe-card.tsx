@@ -1,4 +1,4 @@
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { MotiView } from 'moti';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -9,6 +9,7 @@ import Animated, {
     withTiming,
     runOnJS,
     interpolate,
+    withDelay,
 } from 'react-native-reanimated';
 import { memo, SetStateAction, useEffect, useMemo, useRef } from 'react';
 import { MutableRefObject } from 'react';
@@ -46,9 +47,9 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
     const { width } = useWindowDimensions();
 
     const translateX = useSharedValue(0);
-
     const translateY = useSharedValue(index * 18);
     const isPressed = useSharedValue(false);
+    const opacity = useSharedValue(0);
 
     const SWIPE_THRESHOLD = width * 0.4;
     const VELOCITY_THRESHOLD = 100;
@@ -58,6 +59,8 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
         if (index >= 0) {
             translateY.value = withSpring(index * 18, { damping: 15 });
         }
+        // opacity.value =
+
     }, [index]);
 
     const gesture = Gesture.Pan()
@@ -104,8 +107,12 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
         })
         .onFinalize(() => { isPressed.value = false; });
 
+    const opacityStyle = useAnimatedStyle(() => ({
+        opacity: withTiming(1 - index * 0.1, { duration: 1000 }),
 
+    }));
     const animatedStyle = useAnimatedStyle(() => ({
+
         transform: [
             { translateX: translateX.value },
             { translateY: translateY.value },
@@ -115,7 +122,6 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
                     0.95 ** index + (isPressed.value ? 0.05 : 0),
                 ),
             },
-
         ],
     }));
 
@@ -123,16 +129,18 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
     return (
         <GestureDetector gesture={gesture}>
             <MotiView
-                className="absolute h-full w-full bg-background rounded-lg shadow-lg p-6"
+                className="absolute h-full w-full rounded-lg bg-background"
                 style={[
                     animatedStyle,
                     { zIndex: totalCards - index }
                 ]}
             >
-                <Text className="text-2xl font-bold mb-4">{card.title}</Text>
-                <Text className="text-foreground/70 mb-4">
-                    {card.description}
-                </Text>
+                <Animated.View className=' p-6 h-full w-full rounded-lg bg-card' style={[opacityStyle]}>
+                    <Text className="text-2xl font-bold mb-4">{card.title}</Text>
+                    <Text className="text-foreground/70 mb-4">
+                        {card.description}
+                    </Text>
+                </Animated.View>
             </MotiView>
         </GestureDetector>
     );

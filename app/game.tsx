@@ -46,7 +46,7 @@ export default function GameScreen() {
   ));
 
   return (
-    <View className="flex-1 justify-center items-center p-6 bg-secondary/30">
+    <View className="flex-1 justify-center items-center p-6">
       <View className="w-full max-w-sm h-[20rem]">{cardComponents}</View>
     </View>
   );
