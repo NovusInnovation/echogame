@@ -54,63 +54,57 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
     const SWIPE_THRESHOLD = width * 0.4;
     const VELOCITY_THRESHOLD = 100;
 
-
     useEffect(() => {
         if (index >= 0) {
             translateY.value = withSpring(index * 18, { damping: 15 });
         }
-        // opacity.value =
-
     }, [index]);
 
-    const gesture = Gesture.Pan()
-        .onBegin(() => { isPressed.value = true; })
+    const gesture = useMemo(() => {
+        if (index !== 0) return Gesture.Pan().enabled(false);
 
-        .onUpdate((event) => {
-            translateX.value = event.translationX;
-            translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 200);
+        return Gesture.Pan()
+            .onBegin(() => { isPressed.value = true; })
+            .onUpdate((event) => {
+                translateX.value = event.translationX;
+                translateY.value = event.translationY / (1 + Math.abs(event.translationY) / 200);
 
-            const nextScenario = event.translationX < 0 ? choiseScenarios.optionA : choiseScenarios.optionB;
+                const nextScenario = event.translationX < 0 ? choiseScenarios.optionA : choiseScenarios.optionB;
+                runOnJS(setNextCard)(nextScenario);
+            })
+            .onEnd((event) => {
+                const predictedX = event.velocityX / 2 + event.translationX;
+                const predictedY = event.velocityY / 2 + event.translationY;
+                const direction = predictedX > 0 ? 'optionA' : 'optionB';
+                console.log(event.velocityX, event.velocityY, predictedX, predictedY);
+                if (Math.abs(event.velocityX) > VELOCITY_THRESHOLD && Math.abs(predictedX) > SWIPE_THRESHOLD && choiseScenarios[direction]) {
+                    const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
 
-            console.log(nextScenario)
+                    runOnJS(onDismiss)(direction);
 
-            runOnJS(setNextCard)(nextScenario);
-        })
-        .onEnd((event) => {
-            const predictedX = event.velocityX / 2 + event.translationX;
-            const predictedY = event.velocityY / 2 + event.translationY;
-            const direction = predictedX > 0 ? 'optionA' : 'optionB';
-            console.log(event.velocityX, event.velocityY, predictedX, predictedY);
-            if (Math.abs(event.velocityX) > VELOCITY_THRESHOLD && Math.abs(predictedX) > SWIPE_THRESHOLD && choiseScenarios[direction]) {
-                const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
-
-
-                runOnJS(onDismiss)(direction);
-
-                translateX.value = withSpring(predictedX / dis, {
-                    ...SWIPE_SPRING_CONFIG,
-                    velocity: event.velocityX
-                });
-                translateY.value = withSpring(predictedY / dis, {
-                    ...SWIPE_SPRING_CONFIG,
-                    velocity: event.velocityY,
-                });
-
-
-
-                // runOnJS(fun)();
-            } else {
-                console.log('reset');
-                translateX.value = withSpring(0, { damping: 15, velocity: event.velocityX });
-                translateY.value = withSpring(0, { damping: 15, velocity: event.velocityY });
-            }
-        })
-        .onFinalize(() => { isPressed.value = false; });
+                    translateX.value = withSpring(predictedX / dis, {
+                        ...SWIPE_SPRING_CONFIG,
+                        velocity: event.velocityX
+                    });
+                    translateY.value = withSpring(predictedY / dis, {
+                        ...SWIPE_SPRING_CONFIG,
+                        velocity: event.velocityY,
+                    });
+                } else {
+                    console.log('reset');
+                    translateX.value = withSpring(0, { damping: 15, velocity: event.velocityX });
+                    translateY.value = withSpring(0, { damping: 15, velocity: event.velocityY });
+                }
+            })
+            .onFinalize(() => { isPressed.value = false; });
+    }, [index, choiseScenarios, setNextCard]);
 
     const opacityStyle = useAnimatedStyle(() => ({
-        opacity: withTiming(1 - index * 0.1, { duration: 1000 }),
-
+        opacity: opacity.value,
     }));
+    useEffect(() => {
+        opacity.value = withTiming(1 - index * 0.1, { duration: 500 });
+    }, [index]);
     const animatedStyle = useAnimatedStyle(() => ({
 
         transform: [
@@ -135,7 +129,15 @@ function SwipeCard({ card, index, totalCards, onDismiss, choiseScenarios, setNex
                     { zIndex: totalCards - index }
                 ]}
             >
-                <Animated.View className=' p-6 h-full w-full rounded-lg bg-card' style={[opacityStyle]}>
+                <Animated.View
+                    className='p-6 h-full w-full rounded-lg bg-card transition-shadow duration-200'
+                    style={[
+                        opacityStyle,
+                        {
+                            elevation: 5, // for Android
+                        }
+                    ]}
+                >
                     <Text className="text-2xl font-bold mb-4">{card.title}</Text>
                     <Text className="text-foreground/70 mb-4">
                         {card.description}
