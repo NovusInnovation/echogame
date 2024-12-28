@@ -143,7 +143,7 @@ function SwipeCard({
 		<GestureDetector gesture={gesture}>
 			<MotiView
 				className="absolute h-full w-full rounded-lg bg-background"
-				style={[animatedStyle, { zIndex: totalCards - index }]}
+				style={[animatedStyle, { zIndex: -index }]}
 			>
 				<Animated.View
 					className="p-6 h-full w-full rounded-lg bg-card transition-shadow duration-400 web:shadow-lg web:active:shadow-2xl"

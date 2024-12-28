@@ -5,13 +5,13 @@ type OptionsProps = {
 	card: ClientScenario;
 };
 
-export function options({ card }: OptionsProps) {
+export function Options({ card }: OptionsProps) {
 	return (
-		<>
-			<View className="flex justify-between">
-				<Text>{card.optionA.text}</Text>
-				<Text>{card.optionB.text}</Text>
-			</View>
-		</>
+		<View className="flex flex-row w-full justify-between bg-blue -z-[1]">
+			<Text className="text-foreground max-w-[50%]">{card.optionA.text}</Text>
+			<Text className="text-foreground max-w-[50%] text-right">
+				{card.optionB.text}
+			</Text>
+		</View>
 	);
 }
