@@ -79,7 +79,7 @@ export default function Auth() {
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           disabled={loading}
-          variant="outline"
+
           className="shadow shadow-foreground/5"
           onPress={() => performOAuth(setLoading)}
         >
@@ -90,7 +90,7 @@ export default function Auth() {
         <Button
           disabled={loading}
           onPress={() => logOut(setLoading)}
-          variant="outline"
+
           className="shadow shadow-foreground/5"
         >
           <Text>Sign out</Text>

@@ -115,7 +115,7 @@ export default function Screen() {
           />
           <View />
           <Button
-            variant="outline"
+
             className="shadow shadow-foreground/5"
             onPress={updateProgressValue}
           >
@@ -124,14 +124,14 @@ export default function Screen() {
         </CardFooter>
       </Card>
       <Button
-        variant="outline"
+
         className="shadow shadow-foreground/5"
         onPress={startGame}
       >
         <Text>Start game</Text>
       </Button>
       <Button
-        variant="outline"
+
         className="shadow shadow-foreground/5"
         onPress={authPage}
       >
