@@ -26,6 +26,7 @@ export default function GameScreen() {
       setIsAnimating(false);
       setCards((prevCards) => [...prevCards.slice(1), prevCards.length + prevCards[0] + 1]);
       setCurrentScenario(nextCard!);
+      console.log(nextCard);
     }, 400);
   };
 
