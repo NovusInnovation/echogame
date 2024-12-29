@@ -3,6 +3,7 @@ import SwipeCard from "./components/swipe-card";
 import { useState } from "react";
 import { useScenarioManager } from "~/lib/hooks/useScenarioManager";
 import { Options } from "./components/options";
+import { useSharedValue } from "react-native-reanimated";
 
 const STARTING_SCENARIO_ID = 5;
 
@@ -34,6 +35,8 @@ export default function GameScreen() {
 		}, 400);
 	};
 
+	let [mainTranslateX, setMainTranslateX] = useState(useSharedValue(0));
+
 	const cardComponents = cards.map((card, index) => (
 		<SwipeCard
 			key={card}
@@ -44,6 +47,12 @@ export default function GameScreen() {
 						? currentScenario?.situation ?? "."
 						: nextCard?.situation ?? ".",
 			}}
+			setTranslateX={
+				index == 0 &&
+				((t) => {
+					setMainTranslateX(t);
+				})
+			}
 			index={index - (isAnimating ? 1 : 0)}
 			totalCards={cards.length}
 			onDismiss={handleDismiss}

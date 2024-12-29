@@ -32,6 +32,7 @@ type SwipeCardProps = {
 		optionB: ClientScenario | undefined;
 	};
 	setNextCard: (scenario: ClientScenario | undefined) => void;
+	setTranslateX: ((t: SharedValue<number>) => void) | false;
 };
 
 const SWIPE_SPRING_CONFIG = {
@@ -48,10 +49,12 @@ function SwipeCard({
 	onDismiss,
 	choiseScenarios,
 	setNextCard,
+	setTranslateX,
 }: SwipeCardProps) {
 	const { width } = useWindowDimensions();
 
 	const translateX = useSharedValue(0);
+	if (setTranslateX) setTranslateX(translateX);
 	const translateY = useSharedValue(index * 18);
 	const isPressed = useSharedValue(false);
 	const opacity = useSharedValue(0);
