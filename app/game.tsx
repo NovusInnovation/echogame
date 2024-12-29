@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import SwipeCard from "./components/swipe-card";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useScenarioManager } from "~/lib/hooks/useScenarioManager";
 import { Options } from "./components/options";
 import { useSharedValue } from "react-native-reanimated";
@@ -20,22 +20,37 @@ export default function GameScreen() {
 		setNextCard,
 	} = useScenarioManager(STARTING_SCENARIO_ID);
 
-	const handleDismiss = (direction: "optionA" | "optionB") => {
-		setIsAnimating(true);
-		console.log(`Card swiped ${direction}`);
+	const handleDismiss = useCallback(
+		(direction: "optionA" | "optionB") => {
+			setIsAnimating(true);
+			console.log(`Card swiped ${direction}`);
 
-		setTimeout(() => {
-			setIsAnimating(false);
-			setCards((prevCards) => [
-				...prevCards.slice(1),
-				prevCards.length + prevCards[0] + 1,
-			]);
-			setCurrentScenario(nextCard!);
-			console.log(nextCard);
-		}, 400);
-	};
+			setTimeout(() => {
+				setIsAnimating(false);
+				setCards((prevCards) => [
+					...prevCards.slice(1),
+					prevCards.length + prevCards[0] + 1,
+				]);
+				setCurrentScenario(nextCardRef.current!);
+				console.log(nextCardRef.current);
+			}, 400);
+		},
+		[nextCard]
+	);
+
+	const nextCardRef = useRef(nextCard);
+
+	useEffect(() => {
+		nextCardRef.current = nextCard;
+	}, [nextCard]);
 
 	let [mainTranslateX, setMainTranslateX] = useState(useSharedValue(0));
+
+	
+
+	useEffect(() => {
+		console.log(mainTranslateX);
+	}, [mainTranslateX]);
 
 	const cardComponents = cards.map((card, index) => (
 		<SwipeCard
