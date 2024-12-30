@@ -26,7 +26,7 @@ type SwipeCardProps = {
 	card: { title: string; description: string };
 	index: number;
 	totalCards: number;
-	onDismiss: (direction: "optionA" | "optionB") => void;
+	onDismiss: () => void;
 	choiseScenarios: {
 		optionA: ClientScenario | undefined;
 		optionB: ClientScenario | undefined;
@@ -98,7 +98,7 @@ function SwipeCard({
 				) {
 					const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
 
-					runOnJS(onDismiss)(direction);
+					runOnJS(onDismiss)();
 
 					translateX.value = withSpring(predictedX / dis, {
 						...SWIPE_SPRING_CONFIG,

@@ -20,23 +20,20 @@ export default function GameScreen() {
 		setNextCard,
 	} = useScenarioManager(STARTING_SCENARIO_ID);
 
-	const handleDismiss = useCallback(
-		(direction: "optionA" | "optionB") => {
-			setIsAnimating(true);
-			console.log(`Card swiped ${direction}`);
+	const handleDismiss = useCallback(() => {
+		setIsAnimating(true);
+		console.log(`Card swiped`);
 
-			setTimeout(() => {
-				setIsAnimating(false);
-				setCards((prevCards) => [
-					...prevCards.slice(1),
-					prevCards.length + prevCards[0] + 1,
-				]);
-				setCurrentScenario(nextCard);
-				console.log(nextCard);
-			}, 400);
-		},
-		[nextCard]
-	);
+		setTimeout(() => {
+			setIsAnimating(false);
+			setCards((prevCards) => [
+				...prevCards.slice(1),
+				prevCards.length + prevCards[0] + 1,
+			]);
+			setCurrentScenario(nextCard);
+			console.log(nextCard);
+		}, 400);
+	}, [nextCard]);
 
 	let [mainTranslateX, setMainTranslateX] = useState(useSharedValue(0));
 
@@ -71,7 +68,9 @@ export default function GameScreen() {
 	return (
 		<View className="flex-1 justify-center items-center p-6">
 			<View className="w-full max-w-sm">
-				<View className="w-full max-w-sm h-[20rem]">{cardComponents}</View>
+				<View className="w-full max-w-sm h-[20rem] z-auto">
+					{cardComponents}
+				</View>
 				{currentScenario && <Options card={currentScenario!} />}
 			</View>
 		</View>
