@@ -4,10 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useScenarioManager } from "~/lib/hooks/useScenarioManager";
 import { Options } from "./components/options";
 import { useSharedValue } from "react-native-reanimated";
+import { useFonts, SpaceMono_400Regular } from "@expo-google-fonts/space-mono";
 
 const STARTING_SCENARIO_ID = 5;
 
 export default function GameScreen() {
+	let [fontsLoaded] = useFonts({
+		SpaceMono_400Regular,
+	});
 	const [isAnimating, setIsAnimating] = useState(false);
 	const [cards, setCards] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
