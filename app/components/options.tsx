@@ -26,7 +26,7 @@ type OptionsProps = {
 export function Options({ card }: OptionsProps) {
 	return (
 		<View className="-z-[1]">
-			<View className="py-2 absolute flex flex-row w-full justify-between bg-blue">
+			<View className="py-2 absolute flex flex-row w-full justify-between">
 				<OptionText>{card.optionA.text}</OptionText>
 				<OptionText className="text-right">{card.optionB.text}</OptionText>
 			</View>

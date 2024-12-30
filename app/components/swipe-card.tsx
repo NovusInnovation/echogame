@@ -149,7 +149,7 @@ function SwipeCard({
 				style={[animatedStyle, { zIndex: -index }]}
 			>
 				<Animated.View
-					className="p-6 h-full w-full rounded-lg bg-card transition-shadow duration-400 web:shadow-lg web:active:shadow-2xl"
+					className="p-10 py-12 h-full w-full rounded-lg bg-card transition-shadow duration-400 web:shadow-lg web:active:shadow-2xl"
 					style={[
 						opacityStyle,
 						{
@@ -157,8 +157,13 @@ function SwipeCard({
 						},
 					]}
 				>
-					<Text className="text-2xl font-bold mb-4">{card.title}</Text>
-					<Text className="text-foreground/70 mb-4">{card.description}</Text>
+					{/* <Text className="text-2xl font-bold mb-4">{card.title}</Text> */}
+					<Text
+						className="text-foreground mb-4 text-left"
+						style={{ fontFamily: "SpaceMono_400Regular" }}
+					>
+						{card.description}
+					</Text>
 				</Animated.View>
 			</MotiView>
 		</GestureDetector>

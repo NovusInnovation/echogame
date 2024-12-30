@@ -72,7 +72,7 @@ export default function GameScreen() {
 	return (
 		<View className="flex-1 justify-center items-center p-6">
 			<View className="w-full max-w-sm">
-				<View className="w-full max-w-sm h-[20rem] z-auto">
+				<View className="w-full max-w-sm h-[25rem] z-auto">
 					{cardComponents}
 				</View>
 				{currentScenario && <Options card={currentScenario!} />}
