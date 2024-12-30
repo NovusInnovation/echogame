@@ -31,22 +31,14 @@ export default function GameScreen() {
 					...prevCards.slice(1),
 					prevCards.length + prevCards[0] + 1,
 				]);
-				setCurrentScenario(nextCardRef.current!);
-				console.log(nextCardRef.current);
+				setCurrentScenario(nextCard);
+				console.log(nextCard);
 			}, 400);
 		},
 		[nextCard]
 	);
 
-	const nextCardRef = useRef(nextCard);
-
-	useEffect(() => {
-		nextCardRef.current = nextCard;
-	}, [nextCard]);
-
 	let [mainTranslateX, setMainTranslateX] = useState(useSharedValue(0));
-
-	
 
 	useEffect(() => {
 		console.log(mainTranslateX);

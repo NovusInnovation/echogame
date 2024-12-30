@@ -123,7 +123,7 @@ function SwipeCard({
 			.onFinalize(() => {
 				isPressed.value = false;
 			});
-	}, [index, choiseScenarios, setNextCard]);
+	}, [index, choiseScenarios, setNextCard, onDismiss]);
 
 	const opacityStyle = useAnimatedStyle(() => ({
 		opacity: opacity.value,
