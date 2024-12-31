@@ -1,14 +1,16 @@
-import { View, StyleSheet } from "react-native";
+import { View, Image, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
 import { supabase } from "../lib/supabase/client";
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useState, useRef } from "react";
 import { Button } from "./ui/button";
 import { Text } from "./ui/text";
+import { Edit3 } from "../lib/icons/Edit3";
+import { Check } from "../lib/icons/Check";
 
-WebBrowser.maybeCompleteAuthSession(); // required for web only
+WebBrowser.maybeCompleteAuthSession();
 const redirectTo = makeRedirectUri();
 
 const createSessionFromUrl = async (url: string) => {
@@ -69,48 +71,95 @@ const logOut = async (setLoading: {
 }
 
 export default function Auth() {
-  // Handle linking into app from email app.
   const [loading, setLoading] = useState(false);
+  const [nickname, setNickname] = useState("User");
+  const [profilePicture, setProfilePicture] = useState("https://qbwthytkshrdqrvphuih.supabase.co/storage/v1/object/public/profile_pictures/default-profile-picture.webp");
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const nicknameInputRef = useRef<TextInput>(null);
   const url = Linking.useURL();
   if (url) createSessionFromUrl(url);
 
+  const handleNicknameChange = (newNickname: string) => {
+    setNickname(newNickname);
+  };
+
+  const handleProfilePictureChange = () => {
+    // Logic to change profile picture
+  };
+
+  const handleConfirmNicknameChange = () => {
+    setIsEditingNickname(false);
+    Keyboard.dismiss();
+  };
+
+  const handleEditNickname = () => {
+    setIsEditingNickname(true);
+    setTimeout(() => {
+      nicknameInputRef.current?.focus();
+    }, 100);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button
-          disabled={loading}
-
-          className="shadow shadow-foreground/5"
-          onPress={() => performOAuth(setLoading)}
-        >
-          <Text>Sign in with Google</Text>
-        </Button>
+    <TouchableWithoutFeedback onPress={handleConfirmNicknameChange}>
+      <View className="mt-10 p-3">
+        <View className="items-center">
+          <Image
+            source={{ uri: profilePicture }}
+            className="w-24 h-24 rounded-full"
+          />
+          <Button
+            className="mt-2 shadow shadow-foreground/5"
+            onPress={handleProfilePictureChange}
+          >
+            <Text>Change Picture</Text>
+          </Button>
+        </View>
+        <View className="py-1 self-stretch mt-5 items-center">
+          {isEditingNickname ? (
+            <TouchableWithoutFeedback onPress={handleConfirmNicknameChange}>
+              <View className="flex-row items-center">
+                <TextInput
+                  ref={nicknameInputRef}
+                  value={nickname}
+                  onChangeText={handleNicknameChange}
+                  onBlur={handleConfirmNicknameChange}
+                  onSubmitEditing={handleConfirmNicknameChange}
+                  className="p-2 text-2xl font-bold text-foreground"
+                />
+                <Check
+                  className="ml-2 text-foreground"
+                  onPress={handleConfirmNicknameChange}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+          ) : (
+            <View className="flex-row items-center">
+              <Text className="text-2xl font-bold text-foreground">
+                {nickname}
+              </Text>
+              <Edit3
+                className="ml-2 text-foreground"
+                onPress={handleEditNickname}
+              />
+            </View>
+          )}
+        </View>
+        <View className="py-1 self-stretch mt-5">
+          <Button
+            disabled={loading}
+            className="shadow shadow-foreground/5 flex-row items-center"
+            onPress={() => performOAuth(setLoading)}
+          >
+            <Image
+              source={{
+                uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/240px-Google_%22G%22_logo.svg.png",
+              }}
+              style={{ width: 24, height: 24, marginRight: 8 }}
+            />
+            <Text>Log in with Google</Text>
+          </Button>
+        </View>
       </View>
-      <View style={styles.verticallySpaced}>
-        <Button
-          disabled={loading}
-          onPress={() => logOut(setLoading)}
-
-          className="shadow shadow-foreground/5"
-        >
-          <Text>Sign out</Text>
-        </Button>
-      </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  mt20: {
-    marginTop: 20,
-  },
-});
