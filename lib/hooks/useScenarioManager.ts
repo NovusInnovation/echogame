@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { supabase } from "~/lib/supabase/client";
-import type { ClientScenario } from '~/lib/types/game';
+import type { ClientScenario } from "~/lib/types/game";
 
 export function useScenarioManager(startingScenarioId: number) {
-  const [currentScenario, setCurrentScenario] = useState<ClientScenario | undefined>();
+  const [currentScenario, setCurrentScenario] = useState<
+    ClientScenario | undefined
+  >();
   const [isLoading, setIsLoading] = useState(false);
   const [nextCard, setNextCard] = useState<ClientScenario | undefined>();
-  
+
   const [choiceScenarios, setChoiceScenarios] = useState<{
     optionA: ClientScenario | undefined;
     optionB: ClientScenario | undefined;
@@ -25,8 +27,8 @@ export function useScenarioManager(startingScenarioId: number) {
   const prefetchNextScenarios = async (scenario: ClientScenario) => {
     for (const key of ["optionA", "optionB"] as const) {
       const nextScenario = await generateScenario(scenario[key].id);
-      console.log(nextScenario)
-      setChoiceScenarios(prev => ({
+      console.log(nextScenario);
+      setChoiceScenarios((prev) => ({
         ...prev,
         [key]: nextScenario,
       }));
@@ -58,4 +60,4 @@ export function useScenarioManager(startingScenarioId: number) {
     nextCard,
     setNextCard,
   };
-} 
+}
