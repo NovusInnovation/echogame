@@ -46,7 +46,7 @@
 				{
 					"fonts": [
 						"node_modules/@expo-google-fonts/inter/Inter_900Black.ttf",
-						"node_modules/@expo-google-fonts/space-mono/SpaceMono-400Regular.ttf"
+						"node_modules/@expo-google-fonts/space-mono/SpaceMono_400Regular.ttf"
 					]
 				}
 			]
