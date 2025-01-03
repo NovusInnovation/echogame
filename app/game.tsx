@@ -19,14 +19,9 @@ export default function GameScreen() {
     isAnimating,
     cards,
     handleDismiss,
-    mainTranslateX,
     handleSetTranslateX,
-    isLoading, // Destructure isLoading state
+    isLoading,
   } = useScenarioManager(STARTING_SCENARIO_ID);
-
-  useEffect(() => {
-    console.log(mainTranslateX);
-  }, [mainTranslateX]);
 
   const cardComponents = cards.map((card, index) => (
     <SwipeCard

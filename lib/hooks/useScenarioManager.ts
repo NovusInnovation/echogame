@@ -9,15 +9,22 @@ import { supabase } from "~/lib/supabase/client";
 import type { ClientScenario } from "~/lib/types/game";
 
 export function useScenarioManager(startingScenarioId: number) {
-  const [currentScenario, setCurrentScenario] = useState<ClientScenario | undefined>();
+  const [currentScenario, setCurrentScenario] = useState<
+    ClientScenario | undefined
+  >();
   const [isLoading, setIsLoading] = useState(false);
   const [nextCard, setNextCard] = useState<ClientScenario | undefined>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [cards, setCards] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-  const [choiceScenarios, setChoiceScenarios] = useState<{ optionA: ClientScenario | undefined; optionB: ClientScenario | undefined; }>({ optionA: undefined, optionB: undefined });
+  const [choiceScenarios, setChoiceScenarios] = useState<{
+    optionA: ClientScenario | undefined;
+    optionB: ClientScenario | undefined;
+  }>({ optionA: undefined, optionB: undefined });
 
   const generateScenario = async (scenarioId: number) => {
-    const { data } = await supabase.functions.invoke("generateScenario", { body: { scenarioId } });
+    const { data } = await supabase.functions.invoke("generateScenario", {
+      body: { scenarioId },
+    });
     return data.data;
   };
 
@@ -27,7 +34,10 @@ export function useScenarioManager(startingScenarioId: number) {
 
     setTimeout(() => {
       setIsAnimating(false);
-      setCards((prevCards) => [...prevCards.slice(1), prevCards.length + prevCards[0] + 1]);
+      setCards((prevCards) => [
+        ...prevCards.slice(1),
+        prevCards.length + prevCards[0] + 1,
+      ]);
       setCurrentScenario(nextCard);
       console.log(nextCard);
     }, 400);
@@ -35,14 +45,18 @@ export function useScenarioManager(startingScenarioId: number) {
 
   const [mainTranslateX, setMainTranslateX] = useState(useSharedValue(0));
 
-  const handleSetTranslateX = useCallback((t: SetStateAction<SharedValue<number>>) => {
-    setMainTranslateX(t);
-  }, []);
+  const handleSetTranslateX = useCallback(
+    (t: SetStateAction<SharedValue<number>>) => {
+      setMainTranslateX(t);
+    },
+    []
+  );
 
   useAnimatedReaction(
     () => mainTranslateX.value,
     (translateX) => {
-      const nextScenario = translateX < 0 ? choiceScenarios.optionA : choiceScenarios.optionB;
+      const nextScenario =
+        translateX < 0 ? choiceScenarios.optionA : choiceScenarios.optionB;
       runOnJS(setNextCard)(nextScenario);
     }
   );
@@ -79,8 +93,7 @@ export function useScenarioManager(startingScenarioId: number) {
     isAnimating,
     cards,
     handleDismiss,
-    mainTranslateX,
     handleSetTranslateX,
-    isLoading, // Return isLoading state
+    isLoading,
   };
 }

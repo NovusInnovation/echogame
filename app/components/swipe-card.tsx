@@ -9,14 +9,9 @@ import Animated, {
   withTiming,
   runOnJS,
 } from "react-native-reanimated";
-import { memo, SetStateAction, useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { SharedValue } from "react-native-reanimated";
 import { ClientScenario } from "~/lib/types/game";
-
-interface Card {
-  title: string;
-  description: string;
-}
 
 type SwipeCardProps = {
   card: { title: string; description: string };
@@ -79,7 +74,7 @@ function SwipeCard({
         console.log(event.velocityX, event.velocityY, predictedX, predictedY);
         if (
           (Math.abs(event.velocityX) > VELOCITY_THRESHOLD ||
-          Math.abs(predictedX) > SWIPE_THRESHOLD) &&
+            Math.abs(predictedX) > SWIPE_THRESHOLD) &&
           choiseScenarios[direction]
         ) {
           const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
