@@ -21,13 +21,11 @@ interface Card {
 type SwipeCardProps = {
   card: { title: string; description: string };
   index: number;
-  totalCards: number;
   onDismiss: () => void;
   choiseScenarios: {
     optionA: ClientScenario | undefined;
     optionB: ClientScenario | undefined;
   };
-  setNextCard: (scenario: ClientScenario | undefined) => void;
   setTranslateX: ((t: SharedValue<number>) => void) | false;
 };
 
@@ -41,10 +39,8 @@ export default memo(SwipeCard);
 function SwipeCard({
   card,
   index,
-  totalCards,
   onDismiss,
   choiseScenarios,
-  setNextCard,
   setTranslateX,
 }: SwipeCardProps) {
   const { width } = useWindowDimensions();
@@ -75,12 +71,6 @@ function SwipeCard({
         translateX.value = event.translationX;
         translateY.value =
           event.translationY / (1 + Math.abs(event.translationY) / 200);
-
-        const nextScenario =
-          event.translationX < 0
-            ? choiseScenarios.optionA
-            : choiseScenarios.optionB;
-        runOnJS(setNextCard)(nextScenario);
       })
       .onEnd((event) => {
         const predictedX = event.velocityX / 2 + event.translationX;
@@ -119,7 +109,7 @@ function SwipeCard({
       .onFinalize(() => {
         isPressed.value = false;
       });
-  }, [index, choiseScenarios, setNextCard, onDismiss]);
+  }, [index, choiseScenarios, onDismiss]);
 
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
