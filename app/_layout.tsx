@@ -32,42 +32,41 @@ export {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
+  const { setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
 
   React.useEffect(() => {
-    (async () => {
-      const theme = 'dark'
-      if (Platform.OS === 'web') {
-        // Adds the background color to the html element to prevent white background on overscroll.
-        document.documentElement.classList.add('bg-background');
-      }
-      if (!theme) {
-        AsyncStorage.setItem('theme', colorScheme);
-        setIsColorSchemeLoaded(true);
-        return;
-      }
-      const colorTheme = theme === 'dark' ? 'dark' : 'light';
-      if (colorTheme !== colorScheme) {
+    const initialize = async () => {
+      try {
+        const storedTheme = await AsyncStorage.getItem('theme');
+        const theme = storedTheme || 'dark';
+        if (Platform.OS === 'web') {
+          // Adds the background color to the html element to prevent white background on overscroll.
+          document.documentElement.classList.add('bg-background');
+        }
+        const colorTheme = theme === 'dark' ? 'dark' : 'light';
         setColorScheme(colorTheme);
         setAndroidNavigationBar(colorTheme);
         setIsColorSchemeLoaded(true);
-        return;
-      }
-      setAndroidNavigationBar(colorTheme);
-      setIsColorSchemeLoaded(true);
-    })().finally(async () => {
-      if ((await supabase.auth.getUser()).data?.user?.id) {
-        SplashScreen.hideAsync();
-        return;
-      };
-      console.log('Signing in anonymously...');
-      const { error } = await supabase.auth.signInAnonymously();
-      SplashScreen.hideAsync();
 
-      if (error) throw error;
-      console.log('Signed in anonymously');
-    });
+        const { data } = await supabase.auth.getUser();
+        if (data.user?.id) {
+          SplashScreen.hideAsync();
+          return;
+        }
+
+        console.log('Signing in anonymously...');
+        const { error } = await supabase.auth.signInAnonymously();
+        if (error) throw error;
+        console.log('Signed in anonymously');
+      } catch (error) {
+        console.error('Error during initialization:', error);
+      } finally {
+        SplashScreen.hideAsync();
+      }
+    };
+
+    initialize();
   }, []);
 
   if (!isColorSchemeLoaded) {
@@ -84,7 +83,6 @@ export default function RootLayout() {
             options={{
               title: 'Home',
               headerRight: () => <ThemeToggle />,
-
             }}
           />
         </Stack>
