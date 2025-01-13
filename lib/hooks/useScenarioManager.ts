@@ -100,6 +100,6 @@ export function useScenarioManager(startingScenarioId: number) {
     mainTranslateX,
     setMainTranslateX,
     isLoading,
-    mainTranslateX,
+    
   };
 }
