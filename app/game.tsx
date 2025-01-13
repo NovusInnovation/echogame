@@ -21,6 +21,7 @@ export default function GameScreen() {
     handleDismiss,
     handleSetTranslateX,
     isLoading,
+    mainTranslateX,
   } = useScenarioManager(STARTING_SCENARIO_ID);
 
   const cardComponents = cards.map((card, index) => (
@@ -55,7 +56,12 @@ export default function GameScreen() {
         <View className="w-full max-w-sm h-[25rem] z-auto">
           {cardComponents}
         </View>
-        {currentScenario && <Options card={currentScenario!} />}
+        {currentScenario && (
+          <Options
+            translationX={mainTranslateX}
+            card={currentScenario!}
+          />
+        )}
       </View>
     </View>
   );
