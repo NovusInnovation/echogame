@@ -41,7 +41,10 @@ function SwipeCard({
 	const { width } = useWindowDimensions();
 
 	const translateX = useSharedValue(0);
-	if (setTranslateX) setTranslateX(translateX);
+	useEffect(() => {
+		if (setTranslateX) setTranslateX(translateX);
+	}, [setTranslateX]);
+
 	const translateY = useSharedValue(index * 18);
 	const isPressed = useSharedValue(false);
 	const opacity = useSharedValue(0);
