@@ -16,7 +16,7 @@ import { ClientScenario } from "~/lib/types/game";
 type SwipeCardProps = {
 	card: { title: string; description: string };
 	index: number;
-	onDismiss: () => void;
+	onDismiss: (direction: "optionA" | "optionB") => void;
 	choiseScenarios: {
 		optionA: ClientScenario | undefined;
 		optionB: ClientScenario | undefined;
@@ -82,7 +82,7 @@ function SwipeCard({
 				) {
 					const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
 
-					runOnJS(onDismiss)();
+					runOnJS(onDismiss)(direction);
 
 					translateX.value = withSpring(predictedX / dis, {
 						...SWIPE_SPRING_CONFIG,

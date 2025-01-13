@@ -34,9 +34,11 @@ export function useScenarioManager(startingScenarioId: number) {
   };
 
   // Handler for dismissing a card
-  const handleDismiss = useCallback(() => {
+  const handleDismiss = useCallback((direction: keyof typeof choiceScenarios) => {
     setIsAnimating(true);
     console.log(`Card swiped`);
+    console.log(choiceScenarios[direction]!);
+    prefetchNextScenarios(choiceScenarios[direction]!);
 
     setTimeout(() => {
       setIsAnimating(false);
@@ -56,6 +58,7 @@ export function useScenarioManager(startingScenarioId: number) {
   useAnimatedReaction(
     () => mainTranslateX.value,
     (translateX) => {
+      if(isAnimating) return
       const nextScenario =
         translateX < 0 ? choiceScenarios.optionA : choiceScenarios.optionB;
       runOnJS(setNextCard)(nextScenario);
@@ -65,6 +68,7 @@ export function useScenarioManager(startingScenarioId: number) {
   // Function to prefetch the next scenarios for options A and B
   const prefetchNextScenarios = async (scenario: ClientScenario) => {
     for (const key of ["optionA", "optionB"] as const) {
+      setChoiceScenarios((prev) => ({ ...prev, [key]: undefined }));
       const nextScenario = await generateScenario(scenario[key].id);
       console.log(nextScenario);
       setChoiceScenarios((prev) => ({ ...prev, [key]: nextScenario }));
@@ -99,7 +103,6 @@ export function useScenarioManager(startingScenarioId: number) {
     handleDismiss,
     mainTranslateX,
     setMainTranslateX,
-    isLoading,
-    
+    isLoading
   };
 }
