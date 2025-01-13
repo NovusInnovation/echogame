@@ -21,12 +21,14 @@
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
-    "@rn-primitives/avatar": "~1.1.0",
+    "@rn-primitives/alert-dialog": "^1.1.0",
+    "@rn-primitives/avatar": "^1.1.0",
+    "@rn-primitives/dialog": "^1.1.0",
     "@rn-primitives/portal": "~1.1.0",
-    "@rn-primitives/progress": "~1.1.0",
-    "@rn-primitives/slot": "~1.1.0",
-    "@rn-primitives/tooltip": "~1.1.0",
-    "@rn-primitives/types": "~1.1.0",
+    "@rn-primitives/progress": "^1.1.0",
+    "@rn-primitives/slot": "^1.1.0",
+    "@rn-primitives/tooltip": "^1.1.0",
+    "@rn-primitives/types": "^1.1.0",
     "@supabase/supabase-js": "^2.47.10",
     "@types/aes-js": "^3.1.4",
     "aes-js": "^3.1.2",
@@ -73,6 +75,5 @@
     "@expo/metro-runtime": "^4.0.0",
     "@types/react": "~18.3.12",
     "typescript": "^5.7.2"
-  },
-  "private": true
+  }
 }
