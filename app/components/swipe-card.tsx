@@ -143,7 +143,7 @@ function SwipeCard({
 				>
 					{/* <Text className="text-2xl font-bold mb-4">{card.title}</Text> */}
 					<Text
-						className="text-foreground mb-4 text-left font-mono opacity-90"
+						className="text-foreground mb-4 text-center font-mono opacity-90"
 						// style={{ fontFamily: "SpaceMono_400Regular" }}
 					>
 						{card.description}
