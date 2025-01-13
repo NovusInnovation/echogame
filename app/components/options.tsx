@@ -10,8 +10,8 @@ const OptionText = ({
 	className?: string;
 }) => (
 	<MotiText
-		className={`text-foreground max-w-[50%] text-xl ${className}`}
-		style={{ fontFamily: "SpaceMono_400Regular" }}
+		className={`text-foreground max-w-[50%] text-xl font-mono ${className}`}
+		// style={{ fontFamily: "SpaceMono_400Regular" }}
 		from={{ opacity: 0 }}
 		animate={{ opacity: 1 }}
 	>
