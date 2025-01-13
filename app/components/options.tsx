@@ -28,7 +28,7 @@ const OptionText = ({
 
   return (
     <Animated.Text
-      className={`text-foreground max-w-[50%] text-xl web:font-mono ${className}`}
+      className={`text-foreground max-w-[50%] text-[17px] web:font-mono ${className}`}
       style={[
         Platform.OS !== "web" ? { fontFamily: "SpaceMono_400Regular" } : {},
         animatedStyle,
