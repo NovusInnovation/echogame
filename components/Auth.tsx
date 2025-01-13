@@ -1,4 +1,4 @@
-import { View, Image, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, Image, TextInput, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
@@ -61,14 +61,26 @@ const performOAuth = async (setLoading: {
   setLoading(false);
 };
 
-const logOut = async (setLoading: {
-  (value: SetStateAction<boolean>): void;
-  (arg0: boolean): void;
-}) => {
-  setLoading(true);
-  await supabase.auth.signOut();
-  setLoading(false);
-}
+const deleteUser = async () => {
+  // const { error } = await supabase.auth.api.deleteUser();
+  // if (error) {
+  //   Alert.alert("Error", error.message);
+  // } else {
+  //   Alert.alert("Success", "User deleted successfully");
+  // }
+  Alert.alert("Error", "This feature is not yet implemented");
+};
+
+const confirmDeleteUser = () => {
+  Alert.alert(
+    "Confirm Deletion",
+    "Are you sure you want to delete your account? This action cannot be undone.",
+    [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: deleteUser },
+    ]
+  );
+};
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -157,6 +169,14 @@ export default function Auth() {
               style={{ width: 24, height: 24, marginRight: 8 }}
             />
             <Text>Log in with Google</Text>
+          </Button>
+        </View>
+        <View className="py-1 self-stretch mt-5">
+          <Button
+            className="shadow shadow-foreground/5 flex-row items-center"
+            onPress={confirmDeleteUser}
+          >
+            <Text>Delete Account</Text>
           </Button>
         </View>
       </View>
