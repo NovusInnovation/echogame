@@ -22,6 +22,7 @@ type SwipeCardProps = {
 		optionB: ClientScenario | undefined;
 	};
 	setTranslateX: ((t: SharedValue<number>) => void) | false;
+	nextCard: ClientScenario | undefined;
 };
 
 const SWIPE_SPRING_CONFIG = {
@@ -29,14 +30,13 @@ const SWIPE_SPRING_CONFIG = {
 	damping: 40,
 };
 
-export default memo(SwipeCard);
-
-function SwipeCard({
+export default function SwipeCard({
 	card,
 	index,
 	onDismiss,
 	choiseScenarios,
 	setTranslateX,
+	nextCard,
 }: SwipeCardProps) {
 	const { width } = useWindowDimensions();
 
@@ -73,13 +73,15 @@ function SwipeCard({
 			.onEnd((event) => {
 				const predictedX = event.velocityX / 2 + event.translationX;
 				const predictedY = event.velocityY / 2 + event.translationY;
-				const direction = predictedX > 0 ? "optionA" : "optionB";
+				const direction = predictedX < 0 ? "optionA" : "optionB";
+				console.log("i think ya swiped for " + direction);
 				console.log(event.velocityX, event.velocityY, predictedX, predictedY);
 				if (
 					(Math.abs(event.velocityX) > VELOCITY_THRESHOLD ||
 						Math.abs(predictedX) > SWIPE_THRESHOLD) &&
 					choiseScenarios[direction]
 				) {
+					
 					const dis = Math.sqrt(predictedX ** 2 + predictedY ** 2) / 1000;
 
 					runOnJS(onDismiss)(direction);
@@ -93,6 +95,9 @@ function SwipeCard({
 						velocity: event.velocityY,
 					});
 				} else {
+					if(!choiseScenarios[direction]) {
+						console.log("Rejected swipe due to option not being loaded");
+					}
 					console.log("reset");
 					translateX.value = withSpring(0, {
 						damping: 15,

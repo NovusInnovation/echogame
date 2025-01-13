@@ -38,6 +38,7 @@ export default function GameScreen() {
       index={index - (isAnimating ? 1 : 0)}
       onDismiss={handleDismiss}
       choiseScenarios={choiceScenarios}
+      nextCard={nextCard}
     />
   ));
 
