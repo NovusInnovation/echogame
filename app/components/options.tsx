@@ -1,6 +1,6 @@
 import { MotiText } from "moti";
-import { StyleProp, Text, TextStyle, View } from "react-native";
-import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from "react-native-reanimated";
+import { Platform, StyleProp, Text, TextStyle, View } from "react-native";
+import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withSpring } from "react-native-reanimated";
 import { ClientScenario } from "~/lib/types/game";
 
 const OptionText = ({
@@ -17,16 +17,22 @@ const OptionText = ({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: isLeft
-        ? Math.max(0, Math.min(1, 0.5 - (translationX.value / 300)))
-        : Math.max(0, Math.min(1, 0.5 + (translationX.value / 300))),
+      opacity: withSpring(
+        isLeft
+          ? Math.max(0, Math.min(1, 0.5 - (translationX.value / 300)))
+          : Math.max(0, Math.min(1, 0.5 + (translationX.value / 300))),
+		{ mass: 0.5, damping: 10 },
+      ),
     };	
   });
 
   return (
     <Animated.Text
-      className={`text-foreground max-w-[50%] text-xl font-mono ${className}`}
-      style={animatedStyle}
+      className={`text-foreground max-w-[50%] text-xl web:font-mono ${className}`}
+      style={[
+        Platform.OS !== "web" ? { fontFamily: "SpaceMono_400Regular" } : {},
+        animatedStyle,
+      ]}
     >
       {children}
     </Animated.Text>

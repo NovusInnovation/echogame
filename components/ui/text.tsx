@@ -12,8 +12,9 @@ const Text = React.forwardRef<TextRef, SlottableTextProps>(
     const Component = asChild ? Slot.Text : RNText;
     return (
       <Component
-        className={cn('text-base text-foreground web:select-text web:font-mono native:font-spacemono', textClass, className)}
+        className={cn('text-base text-foreground web:select-text', textClass, className)}
         ref={ref}
+        style={className?.includes('font-mono') ? { fontFamily: 'SpaceMono_400Regular' } : undefined}
         {...props}
       />
     );
