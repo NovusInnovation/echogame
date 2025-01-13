@@ -52,14 +52,6 @@ export function useScenarioManager(startingScenarioId: number) {
   // State to hold the main translate X value
   const [mainTranslateX, setMainTranslateX] = useState(useSharedValue(0));
 
-  // Handler to set the translate X value
-  const handleSetTranslateX = useCallback(
-    (t: SetStateAction<SharedValue<number>>) => {
-      setMainTranslateX(t);
-    },
-    []
-  );
-
   // Reaction to changes in the main translate X value
   useAnimatedReaction(
     () => mainTranslateX.value,
@@ -105,7 +97,8 @@ export function useScenarioManager(startingScenarioId: number) {
     isAnimating,
     cards,
     handleDismiss,
-    handleSetTranslateX,
+    mainTranslateX,
+    setMainTranslateX,
     isLoading,
     mainTranslateX,
   };

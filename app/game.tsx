@@ -19,7 +19,7 @@ export default function GameScreen() {
     isAnimating,
     cards,
     handleDismiss,
-    handleSetTranslateX,
+    setMainTranslateX,
     isLoading,
     mainTranslateX,
   } = useScenarioManager(STARTING_SCENARIO_ID);
@@ -34,7 +34,7 @@ export default function GameScreen() {
             ? currentScenario?.situation ?? "."
             : nextCard?.situation ?? ".",
       }}
-      setTranslateX={index == 0 && handleSetTranslateX}
+      setTranslateX={index == 0 && setMainTranslateX}
       index={index - (isAnimating ? 1 : 0)}
       onDismiss={handleDismiss}
       choiseScenarios={choiceScenarios}
