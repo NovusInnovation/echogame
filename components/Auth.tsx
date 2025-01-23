@@ -63,12 +63,12 @@ const performOAuth = async (setLoading: {
 
 const deleteUser = async () => {
   // const { error } = await supabase.auth.api.deleteUser();
-  // if (error) {
-  //   Alert.alert("Error", error.message);
-  // } else {
-  //   Alert.alert("Success", "User deleted successfully");
-  // }
-  Alert.alert("Error", "This feature is not yet implemented");
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    Alert.alert("Error", error.message);
+  } else {
+    Alert.alert("Success", "User deleted successfully");
+  }
 };
 
 const confirmDeleteUser = () => {
