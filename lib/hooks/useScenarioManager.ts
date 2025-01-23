@@ -34,9 +34,13 @@ export function useScenarioManager(startingScenarioId: number) {
   };
 
   // Handler for dismissing a card
-  const handleDismiss = useCallback(() => {
+  const handleDismiss = (direction: keyof typeof choiceScenarios) => {
     setIsAnimating(true);
     console.log(`Card swiped`);
+    const chosenCard = choiceScenarios[direction]!;  
+    console.log(chosenCard);
+    prefetchNextScenarios(chosenCard);
+    setNextCard(chosenCard);
 
     setTimeout(() => {
       setIsAnimating(false);
@@ -44,10 +48,10 @@ export function useScenarioManager(startingScenarioId: number) {
         ...prevCards.slice(1),
         prevCards.length + prevCards[0] + 1,
       ]);
-      setCurrentScenario(nextCard);
-      console.log(nextCard);
+      setCurrentScenario(chosenCard);
+      console.log("Updated current scenario:", chosenCard);
     }, 400);
-  }, [nextCard]);
+  };
 
   // State to hold the main translate X value
   const [mainTranslateX, setMainTranslateX] = useState(useSharedValue(0));
@@ -56,6 +60,7 @@ export function useScenarioManager(startingScenarioId: number) {
   useAnimatedReaction(
     () => mainTranslateX.value,
     (translateX) => {
+      if(isAnimating) return
       const nextScenario =
         translateX < 0 ? choiceScenarios.optionA : choiceScenarios.optionB;
       runOnJS(setNextCard)(nextScenario);
@@ -65,8 +70,9 @@ export function useScenarioManager(startingScenarioId: number) {
   // Function to prefetch the next scenarios for options A and B
   const prefetchNextScenarios = async (scenario: ClientScenario) => {
     for (const key of ["optionA", "optionB"] as const) {
+      setChoiceScenarios((prev) => ({ ...prev, [key]: undefined }));
       const nextScenario = await generateScenario(scenario[key].id);
-      console.log(nextScenario);
+      console.log("Fetched next scenario:", key, nextScenario);
       setChoiceScenarios((prev) => ({ ...prev, [key]: nextScenario }));
     }
   };
@@ -99,7 +105,6 @@ export function useScenarioManager(startingScenarioId: number) {
     handleDismiss,
     mainTranslateX,
     setMainTranslateX,
-    isLoading,
-    mainTranslateX,
+    isLoading
   };
 }

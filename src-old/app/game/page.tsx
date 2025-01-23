@@ -5,7 +5,7 @@ import {
 	useMotionValue,
 	useTransform,
 	useAnimation,
-	useMotionValueEvent,
+	
 } from "framer-motion";
 import { createClient } from "../../lib/supabase/client";
 import { StatusBar } from "./components/StatusBar";
@@ -69,7 +69,7 @@ export default function GameInterface() {
 				});
 
 				const generatedScenario: ClientScenario = data.data;
-				["optionA", "optionB"].map((key) => {
+				(["optionA", "optionB"] as const).map((key) => {
 					console.log(generatedScenario[key].id);
 					supabase.functions
 						.invoke("generateScenario", {
@@ -119,17 +119,6 @@ export default function GameInterface() {
 	const rightOpacity = useTransform(x, [-200, -30, 30, 200], [0, 0.7, 0.7, 1]);
 
 	const [nextCardContent, setNextCardContent] = useState<string>("");
-
-	useMotionValueEvent(x, "change", (latestX) => {
-		// console.log(latestX);
-
-		if (latestX < 0) {
-			setNextCardContent(choiseScenarios.current.optionA?.situation || "");
-		} else {
-			setNextCardContent(choiseScenarios.current.optionB?.situation || "");
-		}
-	});
-
 
 	const handleDragEnd = async (
 		event: MouseEvent | TouchEvent | PointerEvent,
