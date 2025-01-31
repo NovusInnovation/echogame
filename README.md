@@ -1,50 +1,64 @@
-# Echo game repo - rewritten for the third time in react native :D
+# Echo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Introduction
 
-## Get started
+Echo is an immersive decision-making game where your choices shape the future of a nation in crisis. As the leader, you must navigate complex scenarios and make tough decisions that will impact the environment, economy, military, and social reforms.
 
-1. Install dependencies
+## Table of Contents
 
-   ```bash
-   bun install
-   ```
+- [Echo](#echo)
+  - [Introduction](#introduction)
+  - [Table of Contents](#table-of-contents)
+  - [Where Your Decisions Shape the Future](#where-your-decisions-shape-the-future)
+  - [Technology Stack](#technology-stack)
+  - [Installation](#installation)
+  - [Features](#features)
+  - [Play the Game](#play-the-game)
+  - [License](#license)
 
-2. Start the app
+## Where Your Decisions Shape the Future
 
-   ```bash
-    bun expo start
-   ```
+As the leader of a nation in crisis, you stand at the precipice of change. Your country teeters on the brink, and every decision you make will echo through time, shaping the destiny of your people and the world around you.
 
-In the output, you'll find options to open the app in a
+Will you prioritize the environment, bolster the economy, strengthen your military, or focus on social reforms? Be warned: each choice carries unforeseen consequences that may return to challenge you in unexpected ways.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Swipe left or right to make your decisions, but remember: in the game of power, there are no easy choices.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Technology Stack
 
-## Get a fresh project
+- React Native
+- Expo
 
-When you're ready, run:
+## Installation
 
-```bash
-npm run reset-project
-```
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/novusInnovation/echogame.git
+    ```
+2. Navigate to the project directory:
+    ```bash
+    cd echogame
+    ```
+3. Install dependencies:
+    ```bash
+    npm install
+    ```
+4. Start the development server:
+    ```bash
+    npm start
+    ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Features
 
-## Learn more
+- **Decision-Making:** Swipe left or right to make impactful decisions.
+- **Dynamic Outcomes:** Each choice has consequences that affect the game's storyline.
+- **Multiple Scenarios:** Navigate through various crises and challenges.
+- **Immersive Experience:** Engaging graphics and sound effects.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Play the Game
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+You can play the game at [echogame.xyz](https://echogame.xyz).
 
-## Join the community
+## License
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project is licensed under the MIT License.
